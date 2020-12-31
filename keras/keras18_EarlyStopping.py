@@ -1,5 +1,4 @@
-
-# practice : split validation > use validation_data in model.fit
+# EarlyStopping
 
 import numpy as np
 
@@ -9,30 +8,8 @@ from sklearn.datasets import load_boston
 dataset = load_boston()
 x = dataset.data
 y = dataset.target
-# print(x.shape) # (506,13)
-# print(y.shape) # (506,)
-# print("=========================================")
-# print(x[:5])
-# print(y[:10])
-
-# print(np.max(x), np.min(x)) # 711.0 0.0
-# print(dataset.feature_names)
-# print(dataset.DESCR)
-
-# data preprocessing(minmax)
-# x = x / 711. # divides all components in list of x by 711 where max of x[0], x[1] is not 711
-# print(np.max(x[0]))
 
 from sklearn.preprocessing import MinMaxScaler
-# scaler = MinMaxScaler()
-# scaler.fit(x)
-# x = scaler.transform(x)
-
-# print(np.max(x), np.min(x)) # 711.0 0.0 => 1.0 0.0  
-# print(np.max(x[0]))
-
-# minmaxscaler를 x 에 사용하면 0~1사이가 되는데 이러면 x_train이 0~1사이가 되는것이 아니기에
-# x_train을 0~1 사이로 고정하고 그 스케일러에 다른 테스트, 프레딕션값을 트랜스폼해준다
 
 from sklearn.model_selection import train_test_split as tts
 x_train,x_test,y_train,y_test = tts(x,y,train_size =0.8, shuffle = True)
@@ -60,7 +37,11 @@ model = Model(inputs = input, outputs = d)
 
 #3. compile fit
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
-model.fit(x_train,y_train,epochs = 1000, batch_size = 8, validation_data = (x_val,y_val), verbose = 2)
+
+from tensorflow.keras.callbacks import EarlyStopping
+early_stopping = EarlyStopping(monitor = 'loss', patience = 20, mode = 'auto') # min, max, auto > confused > auto 
+
+model.fit(x_train,y_train,epochs = 2000, batch_size = 8, validation_data = (x_val,y_val), verbose = 1, callbacks= [early_stopping])
 
 #4. evaluation prediction
 loss, mae = model.evaluate(x_test,y_test,batch_size = 8)
