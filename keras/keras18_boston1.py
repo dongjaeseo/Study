@@ -23,22 +23,23 @@ x_train,x_test,y_train,y_test = tts(x,y,train_size =0.8, shuffle = True)
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Input
 input = Input(shape = (13,))
-d = Dense(20,activation = 'relu')(input)
-d = Dense(50)(d)
-d = Dense(50)(d)
-d = Dense(50)(d)
-d = Dense(50)(d)
-d = Dense(10)(d)
+d = Dense(64,activation = 'relu')(input)
+d = Dense(64)(d)
+d = Dense(64)(d)
+d = Dense(64)(d)
+d = Dense(64)(d)
+d = Dense(64)(d)
 d = Dense(1)(d)
 model = Model(inputs = input, outputs = d)
 
 #3. compile fit
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
-model.fit(x_train,y_train,epochs = 2000, batch_size = 32, validation_split = 0.2, verbose = 2)
+model.fit(x_train,y_train,epochs = 1000, batch_size = 8, validation_split = 0.2, verbose = 2)
 
 #4. evaluation prediction
-loss = model.evaluate(x_test,y_test,batch_size = 8)
+loss, mae = model.evaluate(x_test,y_test,batch_size = 8)
 print('loss : ', loss)
+print('mae : ', mae)
 
 y_pred = model.predict(x_test)
 
