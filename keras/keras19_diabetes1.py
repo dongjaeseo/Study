@@ -6,7 +6,7 @@
 
 #1. data
 import numpy as np
-from sklearn.datasets import load_diabetes
+from sklearn.datasets import load_diabetes # R2 가 0.4 정도로 나온다함
 dataset = load_diabetes()
 x = dataset.data
 y = dataset.target

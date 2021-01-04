@@ -22,7 +22,7 @@ haha.fit(x_train)
 x_train = haha.transform(x_train)
 x_test = haha.transform(x_test)
 print(x_train[:5])
-'''
+
 #2. modelling
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Input, Dense
@@ -65,4 +65,3 @@ print("R2 : ", r2_score(y_pred,y_test))
 #3. after using MinMaxScaler
 # RMSE :  54.15666617070038
 # R2 :  0.2306576620370565
-'''
