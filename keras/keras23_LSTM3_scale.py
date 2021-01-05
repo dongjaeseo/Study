@@ -35,7 +35,7 @@ model.add(Dense(1))
 # ear = EarlyStopping(monitor = 'loss', patience= 10, mode = 'auto')
 
 model.compile(loss = 'mse', optimizer = 'adam')
-model.fit(x,y,epochs = 200, batch_size = 1)
+model.fit(x,y,epochs = 300, batch_size = 1)
 
 #4. 평가 예측
 y_pred = model.predict(x_pred)
