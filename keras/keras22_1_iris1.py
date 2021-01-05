@@ -32,9 +32,8 @@ from tensorflow.keras.utils import to_categorical # convert 0,1,2 to [1,0,0] for
 
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
-# y_final = to_categorical(y_final)
-
-
+# y_final = to_categorical(y_final)  >> np.array 형식으로 바꿔짐 >> ([1,0,0])
+'''
 #2. modelling
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Input
@@ -66,3 +65,4 @@ print(y_final)
 # argmax search
 
 # [0.030015692114830017, 1.0, 0.015097531490027905]
+'''
