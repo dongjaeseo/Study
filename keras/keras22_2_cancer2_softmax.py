@@ -33,12 +33,16 @@ model.add(Dense(100, activation = 'relu'))
 model.add(Dense(100, activation = 'relu'))
 model.add(Dense(100, activation = 'relu'))
 model.add(Dense(100, activation = 'relu'))
+model.add(Dense(100, activation = 'relu'))
+model.add(Dense(100, activation = 'relu'))
 model.add(Dense(2, activation = 'softmax'))
 model.summary()
 
 #3. compile fit
+from tensorflow.keras.callbacks import EarlyStopping
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc', 'mae'])
-model.fit(x_train,y_train,epochs = 100, verbose = 2, validation_split = 0.2)
+earlystopping = EarlyStopping(monitor = 'loss', patience = 10, mode = 'auto')
+model.fit(x_train,y_train,epochs = 1000, verbose = 2, validation_split = 0.2, callbacks = earlystopping)
 
 #4. evaluation prediction
 loss = model.evaluate(x_test,y_test)
@@ -46,5 +50,7 @@ print('accuracy : ', loss[1])
 
 y_pred = model.predict(x_pred)
 y_act = np.argmax(y_pred, axis = 1)
-print(y_act)
-print(y_actual)
+# print(y_act)
+# print(y_actual)
+
+# accuracy :  0.9852941036224365
