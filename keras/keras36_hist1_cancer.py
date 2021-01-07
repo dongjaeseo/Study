@@ -40,10 +40,23 @@ model.summary()
 
 #3. compile fit
 from tensorflow.keras.callbacks import EarlyStopping
-model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc', 'mae'])
-earlystopping = EarlyStopping(monitor = 'loss', patience = 10, mode = 'auto')
-model.fit(x_train,y_train,epochs = 1000, verbose = 2, validation_split = 0.2, callbacks = earlystopping)
+model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])
+earlystopping = EarlyStopping(monitor = 'loss', patience = 20, mode = 'auto')
+hist = model.fit(x_train,y_train,epochs = 1000, verbose = 2, validation_split = 0.2, callbacks = earlystopping)
 
+import matplotlib.pyplot as plt
+plt.plot(hist.history['loss'])
+plt.plot(hist.history['val_loss'])
+plt.plot(hist.history['acc'])
+plt.plot(hist.history['val_acc'])
+
+plt.title('loss & acc')
+plt.xlabel('epochs')
+plt.ylabel('loss, acc')
+plt.legend(['loss','val_loss','acc','val_acc'])
+plt.show()
+
+'''
 #4. evaluation prediction
 loss = model.evaluate(x_test,y_test)
 print('accuracy : ', loss[1])
@@ -54,3 +67,4 @@ y_act = np.argmax(y_pred, axis = 1)
 # print(y_actual)
 
 # accuracy :  0.9852941036224365
+'''
