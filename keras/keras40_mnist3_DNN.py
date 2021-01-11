@@ -21,10 +21,10 @@ x_train,x_val,y_train,y_val = train_test_split(x_train,y_train,train_size = 0.8,
 
 
 # 민맥스 스케일을 못 쓰므로 /255. 해준다
-x_train = x_train.reshape(x_train.shape[0],x_train.shape[1],x_train.shape[2],1).astype('float32')/255.
-x_test = x_test.reshape(x_test.shape[0],x_test.shape[1],x_test.shape[2],1)/255.
-x_pred = x_pred.reshape(x_pred.shape[0],x_pred.shape[1],x_pred.shape[2],1)/255.
-x_val = x_val.reshape(x_val.shape[0],x_val.shape[1],x_val.shape[2],1)/255.
+x_train = x_train.reshape(x_train.shape[0],x_train.shape[1]*x_train.shape[2]).astype('float32')/255.
+x_test = x_test.reshape(x_test.shape[0],x_test.shape[1]*x_test.shape[2])/255.
+x_pred = x_pred.reshape(x_pred.shape[0],x_pred.shape[1]*x_pred.shape[2])/255.
+x_val = x_val.reshape(x_val.shape[0],x_val.shape[1]*x_val.shape[2])/255.
 # (x_test.reshape(x_test.shape[0],x_test.shape[1],x_test.shape[2],1))
 
 
@@ -41,12 +41,12 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 
 model = Sequential()
-model.add(Conv2D(filters = 50, kernel_size = (2,2), padding = 'same', strides = 1, input_shape = (28,28,1)))
-model.add(MaxPooling2D(pool_size=2))
+model.add(Dense(10, activation = 'relu', input_dim=784))
 model.add(Dropout(0.2))
-model.add(Conv2D(50,2))
-model.add(Conv2D(50,2))
-model.add(Flatten())
+model.add(Dense(10))
+model.add(Dropout(0.2))
+model.add(Dense(10))
+model.add(Dropout(0.2))
 model.add(Dense(10, activation = 'softmax'))
 model.summary()
 
@@ -73,4 +73,10 @@ print('y_test : ', y_test)
 # acc :  0.9746000170707703
 
 # y_pred :  [7 2 1 0 4 1 4 9 5 9]
+# y_test :  [7 2 1 0 4 1 4 9 5 9]
+
+# DNN
+# loss :  0.3828822374343872
+# acc :  0.909600019454956
+# y_pred :  [7 2 1 0 4 1 4 9 4 9]
 # y_test :  [7 2 1 0 4 1 4 9 5 9]
