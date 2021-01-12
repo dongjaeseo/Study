@@ -50,7 +50,7 @@ model = Model(inputs = input, outputs = d)
 
 #3. compile fit
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-cp = ModelCheckpoint(filepath = './ModelCheckPoint/k46_7_iris_{epoch:3d}-{val_acc:.3f}.hdf5', monitor = 'val_acc', save_best_only=True)
+cp = ModelCheckpoint(filepath = '../data/modelcheckpoint/k46_7_iris_{epoch:3d}-{val_acc:.3f}.hdf5', monitor = 'val_acc', save_best_only=True)
 es = EarlyStopping(monitor = 'val_loss', patience= 30, mode = 'auto')
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])
 model.fit(x_train,y_train, validation_split = 0.2, epochs = 1000, verbose =2, callbacks=[es,cp])

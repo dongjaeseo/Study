@@ -1,8 +1,8 @@
 import numpy as np
 from sklearn.datasets import load_wine
 
-x = np.load('./data/wine_x.npy')
-y = np.load('./data/wine_y.npy')
+x = np.load('../data/npy/wine_x.npy')
+y = np.load('../data/npy/wine_y.npy')
 
 # print(x.shape) # (178, 13)
 # print(y.shape) # (178,)

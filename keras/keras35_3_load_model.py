@@ -36,7 +36,7 @@ x_pred = x_pred.reshape(1,4,1)
 
 #2. 모델링
 from tensorflow.keras.models import load_model
-model = load_model('./model/save_keras35.h5')
+model = load_model('../Data/h5/save_keras35.h5')
 
 #3. 컴파일 훈련
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])

@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-x_train = np.load('./data/cifar100_x_train.npy')
-x_test = np.load('./data/cifar100_x_test.npy')
-y_train = np.load('./data/cifar100_y_train.npy')
-y_test = np.load('./data/cifar100_y_test.npy')
+x_train = np.load('../data/npy/cifar100_x_train.npy')
+x_test = np.load('../data/npy/cifar100_x_test.npy')
+y_train = np.load('../data/npy/cifar100_y_train.npy')
+y_test = np.load('../data/npy/cifar100_y_test.npy')
 
 # plt.imshow(x_train[0])
 # print(x_train.shape, y_train.shape) (50000, 32, 32, 3) (50000, 1)

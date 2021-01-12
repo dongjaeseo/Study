@@ -38,7 +38,7 @@ x_pred = x_pred.reshape(1,4,1)
 from tensorflow.keras.models import load_model
 from tensorflow.keras.layers import Dense
 # 밑 3줄 넣고 테스트
-model = load_model('./model/save_keras35.h5')
+model = load_model('../Data/h5/save_keras35.h5')
 model.add(Dense(5, name = 'aaa'))  # 이름 : Dense
 model.add(Dense(1, name = 'aaaa'))  # 이름 : Dense_1
 model.summary()

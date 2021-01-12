@@ -3,8 +3,8 @@ from sklearn.datasets import load_breast_cancer
 
 #1. data
 
-x = np.load('./data/cancer_x.npy')
-y = np.load('./data/cancer_y.npy')
+x = np.load('../data/npy/cancer_x.npy')
+y = np.load('../data/npy/cancer_y.npy')
 
 x_test = x[-5:]
 x = x[:-5]

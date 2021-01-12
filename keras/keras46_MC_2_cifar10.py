@@ -43,7 +43,7 @@ model = Model(inputs = input, outputs = d)
 
 #3. 컴파일 훈련
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-modelpath = './ModelCheckPoint/k46_2_cifar10_{epoch:03d}-{val_acc:.3f}.hdf5'
+modelpath = '../data/modelcheckpoint/k46_2_cifar10_{epoch:03d}-{val_acc:.3f}.hdf5'
 cp = ModelCheckpoint(monitor = 'val_acc',filepath = modelpath, save_best_only=True, mode = 'auto')
 es = EarlyStopping(monitor = 'loss', patience = 20)
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])

@@ -63,7 +63,7 @@ model = Model(inputs = input, outputs = d)
 
 #3. compile fit
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-cp = ModelCheckpoint(filepath = './ModelCheckPoint/k46_5_diabetes_{epoch:3d}-{val_loss:.3f}.hdf5',save_best_only=True, monitor = 'val_loss')
+cp = ModelCheckpoint(filepath = '../data/modelcheckpoint/k46_5_diabetes_{epoch:3d}-{val_loss:.3f}.hdf5',save_best_only=True, monitor = 'val_loss')
 es = EarlyStopping(monitor = 'loss', patience=10, mode = 'auto')
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
 model.fit(x_train,y_train,epochs = 2000, batch_size = 8, validation_data = (x_val,y_val), verbose = 2, callbacks=[es,cp])

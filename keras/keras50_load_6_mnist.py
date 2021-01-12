@@ -11,10 +11,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-x_train = np.load('./data/mnist_x_train.npy')
-x_test = np.load('./data/mnist_x_test.npy')
-y_train = np.load('./data/mnist_y_train.npy')
-y_test = np.load('./data/mnist_y_test.npy')
+x_train = np.load('../data/npy/mnist_x_train.npy')
+x_test = np.load('../data/npy/mnist_x_test.npy')
+y_train = np.load('../data/npy/mnist_y_train.npy')
+y_test = np.load('../data/npy/mnist_y_test.npy')
 
 x_pred = x_test[:10]
 

@@ -4,8 +4,8 @@ import numpy as np
 
 #1. data
 
-x = np.load('./data/boston_x.npy')
-y = np.load('./data/boston_y.npy')
+x = np.load('../data/npy/boston_x.npy')
+y = np.load('../data/npy/boston_y.npy')
 
 from sklearn.preprocessing import MinMaxScaler
 

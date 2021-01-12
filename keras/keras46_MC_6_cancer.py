@@ -40,7 +40,7 @@ model.summary()
 
 #3. compile fit
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-cp = ModelCheckpoint(filepath = './ModelCheckPoint/k46_6_cancer_{epoch:3d}-{val_acc:.3f}.hdf5', monitor = 'val_acc', save_best_only=True)
+cp = ModelCheckpoint(filepath = '../data/modelcheckpoint/k46_6_cancer_{epoch:3d}-{val_acc:.3f}.hdf5', monitor = 'val_acc', save_best_only=True)
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])
 earlystopping = EarlyStopping(monitor = 'loss', patience = 20, mode = 'auto')
 hist = model.fit(x_train,y_train,epochs = 1000, verbose = 2, validation_split = 0.2, callbacks = [earlystopping, cp])

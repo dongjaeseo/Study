@@ -1,7 +1,7 @@
 import numpy as np
 
-x = np.load('./data/iris_x.npy')
-y = np.load('./data/iris_y.npy')
+x = np.load('../data/npy/iris_x.npy')
+y = np.load('../data/npy/iris_y.npy')
 
 
 # 모델을 완성하시오!!

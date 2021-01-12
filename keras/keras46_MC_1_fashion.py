@@ -39,7 +39,7 @@ model.summary()
 
 #3. 컴파일
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-modelpath = './ModelCheckPoint/k46_1_fashion_{epoch:03d}-{val_acc:.3f}.hdf5'
+modelpath = '../Data/modelcheckpoint/k46_1_fashion_{epoch:03d}-{val_acc:.3f}.hdf5'
 
 cp = ModelCheckpoint(filepath = modelpath, monitor = 'val_acc', save_best_only=True, mode = 'auto')
 es = EarlyStopping(monitor = 'val_loss', patience = 20)

@@ -4,8 +4,8 @@
 import numpy as np
 
 #1. data
-x = np.load('./data/diabetes_x.npy')
-y = np.load('./data/diabetes_y.npy')
+x = np.load('../data/npy/diabetes_x.npy')
+y = np.load('../data/npy/diabetes_y.npy')
 print(x.shape)
 
 from sklearn.preprocessing import MinMaxScaler
