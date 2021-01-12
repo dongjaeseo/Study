@@ -11,9 +11,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from tensorflow.keras.datasets import mnist
+x_train = np.load('./data/mnist_x_train.npy')
+x_test = np.load('./data/mnist_x_test.npy')
+y_train = np.load('./data/mnist_y_train.npy')
+y_test = np.load('./data/mnist_y_test.npy')
 
-(x_train,y_train),(x_test,y_test) = mnist.load_data()
 x_pred = x_test[:10]
 
 from sklearn.model_selection import train_test_split
@@ -49,24 +51,20 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 
 model = Sequential()
-model.add(Conv2D(filters = 80, kernel_size = (2,2), padding = 'same', strides = 1, input_shape = (28,28,1)))
+model.add(Conv2D(filters = 100, kernel_size = (2,2), padding = 'same', strides = 1, input_shape = (28,28,1)))
 model.add(MaxPooling2D(pool_size=2))
 model.add(Dropout(0.2))
-model.add(Conv2D(64,2))
-model.add(Dropout(0.2))
-model.add(Conv2D(64,2))
+model.add(Conv2D(50,2))
+model.add(Conv2D(50,2))
 model.add(Flatten())
 model.add(Dense(10, activation = 'softmax'))
 model.summary()
 
 #3. 컴파일 훈련
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-modelpath = './ModelCheckPoint/k45_mnist_{epoch:02d}-{val_loss:.4f}.hdf5'
-es = EarlyStopping(monitor = 'val_loss', patience = 10, mode = 'auto')
-cp = ModelCheckpoint(filepath=modelpath, monitor = 'val_loss', save_best_only=True, mode = 'auto')
-
+from tensorflow.keras.callbacks import EarlyStopping
+es = EarlyStopping(monitor = 'acc', patience = 15, mode = 'auto')
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])
-hist = model.fit(x_train,y_train, epochs = 1, batch_size = 32 ,validation_data=(x_val,y_val), verbose = 2, callbacks = [es,cp])
+model.fit(x_train,y_train, epochs = 1000, batch_size = 32 ,validation_data=(x_val,y_val), verbose = 2, callbacks = [es])
 
 #4. 평가 예측
 loss = model.evaluate(x_test,y_test,batch_size = 32)
@@ -80,52 +78,9 @@ y_pred = np.argmax(y_pred, axis = 1)
 print('y_pred : ', y_pred)
 print('y_test : ', y_test)
 
-#시각화
-
-### 폰트 깨짐 #########################################################################################
-import matplotlib
-from matplotlib import font_manager
-import matplotlib.pyplot as plt
-font_fname =  'C:/Users/ai/Downloads/NanumFontSetup_TTF_ALL/NanumBarunGothic.ttf'
-font_family = font_manager.FontProperties(fname = font_fname).get_name()
-
-plt.rcParams["font.family"] = font_family
-font_list = font_manager.findSystemFonts(fontpaths = None, fontext='ttf')
-#######################################################################################################
-
-plt.figure(figsize = (10,6))
-
-plt.subplot(2,1,1) # 2행1열 중 첫번째
-plt.plot(hist.history['loss'], marker = '.',c = 'red', label = 'loss')
-plt.plot(hist.history['val_loss'], marker = '.',c = 'blue', label = 'val_loss')
-plt.grid()
-
-plt.title('한글')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(loc = 'upper right')
-
-plt.subplot(2,1,2) # 2행1열중 두번째
-plt.plot(hist.history['acc'], marker = '.',c = 'red', label = 'acc')
-plt.plot(hist.history['val_acc'], marker = '.',c = 'blue', label = 'val_acc')
-plt.grid()
-
-plt.title('Accuracy')
-plt.ylabel('acc')
-plt.xlabel('epoch')
-plt.legend(loc = 'upper right')
-plt.show()
-
 # acc 0.985 이상!
 # loss :  0.100032277405262
 # acc :  0.9746000170707703
 
 # y_pred :  [7 2 1 0 4 1 4 9 5 9]
 # y_test :  [7 2 1 0 4 1 4 9 5 9]
-
-
-
-
-
-# print(font_list[:10])
-# print(matplotlib.get_cachedir())

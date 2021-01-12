@@ -43,11 +43,26 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 cp = ModelCheckpoint(filepath = './ModelCheckPoint/k46_6_cancer_{epoch:3d}-{val_acc:.3f}.hdf5', monitor = 'val_acc', save_best_only=True)
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])
 earlystopping = EarlyStopping(monitor = 'loss', patience = 20, mode = 'auto')
-model.fit(x_train,y_train,epochs = 1000, verbose = 2, validation_split = 0.2, callbacks = [earlystopping, cp])
+hist = model.fit(x_train,y_train,epochs = 1000, verbose = 2, validation_split = 0.2, callbacks = [earlystopping, cp])
 
 #4. evaluation prediction
 loss = model.evaluate(x_test,y_test)
 print('accuracy : ', loss[1])
+
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.rcParams['axes.unicode_minus'] = False 
+matplotlib.rcParams['font.family'] = "Malgun Gothic"
+plt.plot(hist.history['loss'])
+plt.plot(hist.history['val_loss'])
+plt.plot(hist.history['acc'])
+plt.plot(hist.history['val_acc'])
+
+plt.title('비용 & 정확도')
+plt.ylabel('loss,acc')
+plt.xlabel('epoch')
+plt.legend(['train loss', 'val loss', 'train acc', 'val acc'])
+plt.show()
 
 y_pred = model.predict(x_pred)
 y_act = np.argmax(y_pred, axis = 1)
