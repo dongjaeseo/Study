@@ -35,7 +35,7 @@ y_val = to_categorical(y_val)
 
 
 #2. 모델링
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 
 model = Sequential()
@@ -47,26 +47,45 @@ model.add(Dropout(0.2))
 model.add(Conv2D(64,2))
 model.add(Flatten())
 model.add(Dense(10, activation = 'softmax'))
-model.summary()
+# model.summary()
 
-model.save('../data/h5/k52_1_model1.h5')
+# model.save('../data/h5/k52_1_model1.h5')
 
 #3. 컴파일 훈련
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-modelpath = '../data/modelcheckpoint/k52_1_mnist_{epoch:02d}-{val_loss:.4f}.hdf5'
-es = EarlyStopping(monitor = 'val_loss', patience = 10, mode = 'auto')
-cp = ModelCheckpoint(filepath=modelpath, monitor = 'val_loss', save_best_only=True, mode = 'auto')
+# from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+# modelpath = '../data/modelcheckpoint/k52_1_mnist_{epoch:02d}-{val_loss:.4f}.hdf5'
+# k52_1_mnist_??? => k52_1_MCK.h5 이름을 바꿔줄것
+# es = EarlyStopping(monitor = 'val_loss', patience = 10, mode = 'auto')
+# cp = ModelCheckpoint(filepath=modelpath, monitor = 'val_loss', save_best_only=True, mode = 'auto')
 
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])
-hist = model.fit(x_train,y_train, epochs = 100, batch_size = 32 ,validation_data=(x_val,y_val), verbose = 2, callbacks = [es,cp])
+# hist = model.fit(x_train,y_train, epochs = 100, batch_size = 32 ,validation_data=(x_val,y_val), verbose = 2, callbacks = [es,cp])
 
-model.save('../data/h5/k52_1_model2.h5')
-model.save_weights('../data/h5/k52_1_weight.h5')
+# model.save('../data/h5/k52_1_model2.h5')
+# model.save_weights('../data/h5/k52_1_weight.h5')
 
+# model1 = load_model('../data/h5/k52_1_model2.h5')
 
-#4. 평가 예측
+# #4-1. 평가 예측
+# loss = model1.evaluate(x_test,y_test,batch_size = 32)
+# print('model1_loss : ', loss[0])
+# print('model1_acc : ', loss[1])
+
+#4-2. 평가 예측
+model.load_weights('../data/h5/k52_1_weight.h5')
+
 loss = model.evaluate(x_test,y_test,batch_size = 32)
-print('loss : ', loss[0])
-print('acc : ', loss[1])
+print('가중치_loss : ', loss[0])
+print('가중치_acc : ', loss[1])
 
+# 가중치_loss :  0.09655730426311493
+# 가중치_acc :  0.97079998254776
 
+model2 = load_model('../data/h5/k52_1_model2.h5')
+
+loss2 = model2.evaluate(x_test,y_test,batch_size = 32)
+print('로드모델_loss : ', loss2[0])
+print('로드모델_acc : ', loss2[1])
+
+# 로드모델_loss :  0.09655730426311493
+# 로드모델_acc :  0.97079998254776
