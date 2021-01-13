@@ -52,7 +52,7 @@ print(df.describe())
 print(df['Target'].value_counts()) # df 의 타겟의 각 값이 몇개인지 세준다
 
 
-# 상관계수 하트맵
+# 상관계수 히트맵
 print(df.corr()) # 피쳐들이 타겟과 얼마나 상관?있는지 확인
 
 import matplotlib.pyplot as plt
