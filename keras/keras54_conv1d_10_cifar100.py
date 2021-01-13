@@ -27,6 +27,13 @@ y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
 y_val = to_categorical(y_val)
 
+np.save('../data/npy/ss_x_train.npy', arr = x_train)
+np.save('../data/npy/ss_x_test.npy', arr = x_test)
+np.save('../data/npy/ss_x_val.npy', arr = x_val)
+np.save('../data/npy/ss_y_train.npy', arr = y_train)
+np.save('../data/npy/ss_y_test.npy', arr = y_test)
+np.save('../data/npy/ss_y_val.npy', arr = y_val)
+'''
 #2. 모델링
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Conv1D, MaxPool1D, Flatten, Dropout, Input
@@ -64,6 +71,6 @@ result = model.evaluate(x_test,y_test,batch_size = 1)
 print('loss : ', result[0])
 print('acc : ', result[1])
 
-
+'''
 
 
