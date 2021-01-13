@@ -27,13 +27,6 @@ y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
 y_val = to_categorical(y_val)
 
-np.save('../data/npy/ss_x_train.npy', arr = x_train)
-np.save('../data/npy/ss_x_test.npy', arr = x_test)
-np.save('../data/npy/ss_x_val.npy', arr = x_val)
-np.save('../data/npy/ss_y_train.npy', arr = y_train)
-np.save('../data/npy/ss_y_test.npy', arr = y_test)
-np.save('../data/npy/ss_y_val.npy', arr = y_val)
-'''
 #2. 모델링
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Conv1D, MaxPool1D, Flatten, Dropout, Input
@@ -61,7 +54,7 @@ model = Model(inputs = input, outputs = d)
 #3. 컴파일 훈련
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 es = EarlyStopping(monitor = 'val_loss', patience = 15)
-# cp = ModelCheckpoint(filepath = '../data/modelcheckpoint/k54_2_boston_{epoch:2d}-{val_loss:.3f}.hdf5', save_best_only=True)
+cp = ModelCheckpoint(filepath = '../data/modelcheckpoint/k54_2_boston_{epoch:2d}-{val_loss:.3f}.hdf5', save_best_only=True)
 
 model.compile(loss = 'categorical_crossentropy', optimizer= 'adam', metrics = ['acc'])
 model.fit(x_train,y_train,epochs = 1000, validation_data = (x_val,y_val), callbacks = [es], batch_size = 1)
@@ -70,7 +63,5 @@ model.fit(x_train,y_train,epochs = 1000, validation_data = (x_val,y_val), callba
 result = model.evaluate(x_test,y_test,batch_size = 1)
 print('loss : ', result[0])
 print('acc : ', result[1])
-
-'''
 
 

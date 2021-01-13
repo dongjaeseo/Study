@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+#1. 데이터
 x_train = np.load('../data/npy/ss_x_train.npy')
 x_test = np.load('../data/npy/ss_x_test.npy')
 x_val = np.load('../data/npy/ss_x_val.npy')
@@ -14,9 +15,11 @@ y_val = np.load('../data/npy/ss_y_val.npy')
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, LSTM
 
-model = load_model('../data/modelcheckpoint/samsungjuga_ 44_0.953.hdf5')
+model = load_model('../data/modelcheckpoint/samsungjuga_ 47.hdf5')
 
 #4. 평가 예측
+result = model.evaluate(x_test,y_test,batch_size = 8)
+print('loss, mae : ', result)
 y_pred = model.predict(x_test)
 from sklearn.metrics import r2_score
 print('r2 : ', r2_score(y_test,y_pred))
@@ -24,5 +27,6 @@ print('r2 : ', r2_score(y_test,y_pred))
 y_pred2 = model.predict(x_pred)
 print(y_pred2)
 
-# loss: 5263298.5000 - mean_absolute_error: 1889.7477
-# r2 :  0.9303956961251291
+# loss, mae :  [2562125.5, 1141.66455078125]
+# r2 :  0.9661172643063053
+# [[91059.47]]

@@ -65,15 +65,15 @@ x_test = x_test.reshape(x_test.shape[0],x_test.shape[1],1)
 x_val = x_val.reshape(x_val.shape[0],x_val.shape[1],1)
 x_pred = x_pred.reshape(x_pred.shape[0],x_pred.shape[1],1)
 
-np.save('../data/npy/ss_x_train.npy', arr = x_train)
-np.save('../data/npy/ss_x_test.npy', arr = x_test)
-np.save('../data/npy/ss_x_val.npy', arr = x_val)
-np.save('../data/npy/ss_x_pred.npy', arr = x_pred)
+# np.save('../data/npy/ss_x_train.npy', arr = x_train)
+# np.save('../data/npy/ss_x_test.npy', arr = x_test)
+# np.save('../data/npy/ss_x_val.npy', arr = x_val)
+# np.save('../data/npy/ss_x_pred.npy', arr = x_pred)
 
-np.save('../data/npy/ss_y_train.npy', arr = y_train)
-np.save('../data/npy/ss_y_test.npy', arr = y_test)
-np.save('../data/npy/ss_y_val.npy', arr = y_val)
-'''
+# np.save('../data/npy/ss_y_train.npy', arr = y_train)
+# np.save('../data/npy/ss_y_test.npy', arr = y_test)
+# np.save('../data/npy/ss_y_val.npy', arr = y_val)
+
 #2. 모델링
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
@@ -96,10 +96,10 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 es = EarlyStopping(monitor = 'val_loss', patience= 20)
 cp = ModelCheckpoint(filepath = '../data/modelcheckpoint/samsungjuga_{epoch:3d}.hdf5', monitor = 'val_loss', save_best_only=True)
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
-model.fit(x_train,y_train,epochs = 1000, validation_data = (x_val,y_val), batch_size = 32, callbacks = [es,cp])
+model.fit(x_train,y_train,epochs = 1000, validation_data = (x_val,y_val), batch_size = 8, callbacks = [es,cp])
 
 #4. 평가 예측
-result = model.evaluate(x_test,y_test,batch_size=32)
+result = model.evaluate(x_test,y_test,batch_size=8)
 y_pred = model.predict(x_test)
 
 from sklearn.metrics import r2_score
@@ -128,4 +128,10 @@ print("내일의 종가는??? : ", y_tom)
 # R2 :  0.9337886851060314
 # 내일의 종가는??? :  [[90325.82]]
 
-'''
+# loss :  7821113.5
+# R2 :  0.8277320116109961
+# 내일의 종가는??? :  [[81798.79]]
+
+# loss :  1223667.625
+# R2 :  0.9754239507198131
+# 내일의 종가는??? :  [[95209.74]]
