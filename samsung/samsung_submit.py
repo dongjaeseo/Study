@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
-from samsung_merge_function import size
+
+
+size = 10
 
 #1. 데이터
 x_train = np.load('./samsung/samsung_new_%d.npy'%size,allow_pickle=True)[0]
@@ -26,4 +28,3 @@ y_next = model.predict(x_pred)
 print(y_next)
 
 ##############################
-
