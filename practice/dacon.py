@@ -64,14 +64,14 @@ model.add(Reshape((2,48)))
 #3. 컴파일 훈련
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 es = EarlyStopping(monitor = 'val_loss', patience = 20)
-cp = ModelCheckpoint(filepath = '../dacon/data/modelcheckpoint/dacon.hdf5',monitor='val_loss', save_best_only=True)
 lr = ReduceLROnPlateau(monitor = 'val_loss', factor = 0.3, patience = 10, verbose = 1)
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
 
 # 모델 9번 돌리기 
 d = []  
 for l in range(9):
-    model.fit(x,y,epochs= 1, validation_split=0.2, batch_size =8, callbacks = [es,cp,lr])
+    cp = ModelCheckpoint(filepath = '../dacon/data/modelcheckpoint/dacon%d.hdf5'%l,monitor='val_loss', save_best_only=True)
+    model.fit(x,y,epochs= 1000, validation_split=0.2, batch_size =8, callbacks = [es,cp,lr])
 
     c = []
     for i in range(81):
@@ -115,7 +115,7 @@ for i in range(81):
         for k in range(48):
             df = pd.DataFrame(e[i,j,k])
             for l in range(9):
-                df_sub.iloc[[i*96+j*48+k],[l]] = df.quantile(q = ((l+1)/10.),axis = 0,numeric_only = True,interpolation = 'linear')
+                df_sub.iloc[[i*96+j*48+k],[l]] = df.quantile(q = ((l+1)/10.),axis = 0)[0]
 
 df_sub.to_csv('./practice/dacon/data/submit.csv')
 
