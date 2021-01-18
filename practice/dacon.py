@@ -63,7 +63,7 @@ es = EarlyStopping(monitor = 'val_loss', patience = 20)
 cp = ModelCheckpoint(filepath = '../dacon/data/modelcheckpoint/dacon.hdf5',monitor='val_loss', save_best_only=True)
 lr = ReduceLROnPlateau(monitor = 'val_loss', factor = 0.3, patience = 10, verbose = 1)
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
-model.fit(x_train,y_train,epochs= 1000, validation_split=0.2, batch_size =8, callbacks = [es,cp,lr])
+model.fit(x_train,y_train,epochs= 1, validation_split=0.2, batch_size =8, callbacks = [es,cp,lr])
 
 #4. 평가 예측
 result = model.evaluate(x_test,y_test,batch_size = 8)
@@ -72,6 +72,8 @@ print(result)
 
 df = pd.read_csv('./practice/dacon/data/sample_submission.csv', index_col = 0)
 
+k = []
+# submit에 집어넣기
 for i in range(81):
     testx = pd.read_csv('./practice/dacon/data/test/%d.csv'%i)
     testx.drop(['Hour','Minute','Day'], axis =1, inplace = True)
@@ -80,8 +82,14 @@ for i in range(81):
     testx,nully = split_xy(testx,7,0)
     y_pred = model.predict(testx)
     y_pred = y_pred.reshape(96,6)
+    x = []
     for j in range(96):
-        for k in range(6):
-            df.iloc[[j+96*i],[k+3]] = y_pred[j][k]
+        x.append(y_pred[j,5])
+    k.append(x)
+x = np.array(x)
+k = np.array(k)
 
-df.to_csv('./practice/dacon/data/submit.csv')
+k = pd.DataFrame(k)
+k.to_csv('./practice/dacon/data/hahaha.csv')
+
+# df.to_csv('./practice/dacon/data/submit.csv')
