@@ -94,6 +94,8 @@ for l in range(9):
 d = np.array(d)
 # print(d.shape) (9, 81, 2, 48)
 
+
+### 뻘짓!! 쉐이프 바꿔주는중~~~
 e = []
 for i in range(81):
     f = []
@@ -110,6 +112,7 @@ for i in range(81):
 e = np.array(e)
 df_sub = pd.read_csv('./practice/dacon/data/sample_submission.csv', index_col = 0, header = 0)
 
+# submit 파일에 데이터들 덮어 씌우기!!
 for i in range(81):
     for j in range(2):
         for k in range(48):
