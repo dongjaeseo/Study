@@ -114,15 +114,17 @@ model = Model(inputs = [input1,input2], outputs = d3)
 # model.summary()
 
 #3. 컴파일 훈련
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 modelpath = './samsung/samsung_final.hdf5'
 cp = ModelCheckpoint(filepath = modelpath, monitor = 'val_loss', save_best_only = True)
 es = EarlyStopping(monitor = 'val_loss', patience = 30)
+lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 15, factor = 0.5, verbose = 1)
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
-hist = model.fit([x_samsung_train,x_kodex_train],[y1_train,y2_train],epochs = 1000, batch_size = 8, validation_data = ([x_samsung_val,x_kodex_val],[y1_val,y2_val]),callbacks = [es,cp])
+hist = model.fit([x_samsung_train,x_kodex_train],[y1_train,y2_train],epochs = 1000,\
+     batch_size = 4, validation_data = ([x_samsung_val,x_kodex_val],[y1_val,y2_val]),callbacks = [es,cp,lr])
 
 #4. 평가 예측
-result = model.evaluate([x_samsung_test,x_kodex_test],[y1_test,y2_test],batch_size = 8)
+result = model.evaluate([x_samsung_test,x_kodex_test],[y1_test,y2_test],batch_size = 4)
 print('loss, mae = ', result)
 y_pred = model.predict([x_samsung_pred,x_kodex_pred])
 print(y_pred)

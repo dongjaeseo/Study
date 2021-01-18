@@ -23,10 +23,10 @@ y2_val = np.load('./samsung/samsung_final_samsung.npy', allow_pickle = True)[8]
 
 from tensorflow.keras.models import load_model
 # 제출용!!
-model = load_model('./samsung/samsung_final_0.98_91205.hdf5')
+model = load_model('./samsung/samsung_final.hdf5')
 
 
-result = model.evaluate([x_samsung_test,x_kodex_test],[y1_test,y2_test],batch_size = 8)
+result = model.evaluate([x_samsung_test,x_kodex_test],[y1_test,y2_test],batch_size = 4)
 print(result)
 
 y_pred = model.predict([x_samsung_test,x_kodex_test])
