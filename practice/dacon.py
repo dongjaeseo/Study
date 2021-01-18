@@ -26,8 +26,6 @@ x,y = split_xy(data,7,2)
 # x.shape = (1087,7,48,6)
 # y.shape = (1087,2,48,6)
 
-
-
 from sklearn.model_selection import train_test_split as tts
 x_train,x_test,y_train,y_test = tts(x,y,train_size = 0.8, shuffle = True, random_state = 0)
 
@@ -70,3 +68,20 @@ model.fit(x_train,y_train,epochs= 1000, validation_split=0.2, batch_size =8, cal
 #4. 평가 예측
 result = model.evaluate(x_test,y_test,batch_size = 8)
 print(result)
+
+
+df = pd.read_csv('./practice/dacon/data/sample_submission.csv', index_col = 0)
+
+for i in range(81):
+    testx = pd.read_csv('./practice/dacon/data/test/%d.csv'%i)
+    testx.drop(['Hour','Minute','Day'], axis =1, inplace = True)
+    testx = testx.to_numpy()  
+    testx = testx.reshape(7,48,6)
+    testx,nully = split_xy(testx,7,0)
+    y_pred = model.predict(testx)
+    y_pred = y_pred.reshape(96,6)
+    for j in range(96):
+        for k in range(6):
+            df.iloc[[j+96*i],[k+3]] = y_pred[j][k]
+
+df.to_csv('./practice/dacon/data/submit.csv')
