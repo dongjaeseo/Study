@@ -17,17 +17,21 @@ def split_xy(data,timestep,ynum):
         if y_end > len(data):
             break
         x_tmp = data[i:x_end]
-        y_tmp = data[x_end:y_end]
+        y_tmp = data[x_end:y_end,:,-1]
         x.append(x_tmp)
         y.append(y_tmp)
     return(np.array(x),np.array(y))
+x,y = split_xy(data,7,2)
+
+# x.shape = (1087,7,48,6)
+# y.shape = (1087,2,48)  
 
 x,y = split_xy(data,7,2)
 # x.shape = (1087,7,48,6)
 # y.shape = (1087,2,48,6)
 
 from sklearn.model_selection import train_test_split as tts
-x_train,x_test,y_train,y_test = tts(x,y,train_size = 0.8, shuffle = True, random_state = 0)
+# x_train,x_test,y_train,y_test = tts(x,y,train_size = 0.8, shuffle = True, random_state = 0)
 
 #2. 모델구성
 from tensorflow.keras.models import Sequential
@@ -52,9 +56,9 @@ model.add(Dense(128))
 model.add(LeakyReLU(alpha = 0.05))
 model.add(Dense(256))
 model.add(LeakyReLU(alpha = 0.05))
-model.add(Dense(2*48*6))
+model.add(Dense(2*48))
 model.add(LeakyReLU(alpha = 0.05))
-model.add(Reshape((2,48,6)))
+model.add(Reshape((2,48)))
 # model.summary()
 
 #3. 컴파일 훈련
@@ -63,33 +67,56 @@ es = EarlyStopping(monitor = 'val_loss', patience = 20)
 cp = ModelCheckpoint(filepath = '../dacon/data/modelcheckpoint/dacon.hdf5',monitor='val_loss', save_best_only=True)
 lr = ReduceLROnPlateau(monitor = 'val_loss', factor = 0.3, patience = 10, verbose = 1)
 model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
-model.fit(x_train,y_train,epochs= 1, validation_split=0.2, batch_size =8, callbacks = [es,cp,lr])
 
-#4. 평가 예측
-result = model.evaluate(x_test,y_test,batch_size = 8)
-print(result)
+# 모델 9번 돌리기 
+d = []  
+for l in range(9):
+    model.fit(x,y,epochs= 1, validation_split=0.2, batch_size =8, callbacks = [es,cp,lr])
 
+    c = []
+    for i in range(81):
+        testx = pd.read_csv('./practice/dacon/data/test/%d.csv'%i)
+        testx.drop(['Hour','Minute','Day'], axis =1, inplace = True)
+        testx = testx.to_numpy()  
+        testx = testx.reshape(7,48,6)
+        testx,null_y = split_xy(testx,7,0)
+        y_pred = model.predict(testx)
+        y_pred = y_pred.reshape(2,48)
+        a = []
+        for j in range(2):
+            b = []
+            for k in range(48):
+                b.append(y_pred[j,k])
+            a.append(b)   
+        c.append(a)
+    d.append(c)
+    # c = np.array(c) # (81, 2, 48)
+d = np.array(d)
+# print(d.shape) (9, 81, 2, 48)
 
-df = pd.read_csv('./practice/dacon/data/sample_submission.csv', index_col = 0)
-
-k = []
-# submit에 집어넣기
+e = []
 for i in range(81):
-    testx = pd.read_csv('./practice/dacon/data/test/%d.csv'%i)
-    testx.drop(['Hour','Minute','Day'], axis =1, inplace = True)
-    testx = testx.to_numpy()  
-    testx = testx.reshape(7,48,6)
-    testx,nully = split_xy(testx,7,0)
-    y_pred = model.predict(testx)
-    y_pred = y_pred.reshape(96,6)
-    x = []
-    for j in range(96):
-        x.append(y_pred[j,5])
-    k.append(x)
-x = np.array(x)
-k = np.array(k)
+    f = []
+    for j in range(2):
+        g = []
+        for k in range(48):
+            h = []
+            for l in range(9):
+                h.append(d[l,i,j,k])
+            g.append(h)
+        f.append(g)
+    e.append(f)
 
-k = pd.DataFrame(k)
-k.to_csv('./practice/dacon/data/hahaha.csv')
+e = np.array(e)
+df_sub = pd.read_csv('./practice/dacon/data/sample_submission.csv', index_col = 0, header = 0)
 
-# df.to_csv('./practice/dacon/data/submit.csv')
+for i in range(81):
+    for j in range(2):
+        for k in range(48):
+            df = pd.DataFrame(e[i,j,k])
+            for l in range(9):
+                df_sub.iloc[[i*96+j*48+k],[l]] = df.quantile(q = ((l+1)/10.),axis = 0,numeric_only = True,interpolation = 'linear')
+
+df_sub.to_csv('./practice/dacon/data/submit.csv')
+
+
