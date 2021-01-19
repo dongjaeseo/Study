@@ -46,39 +46,13 @@ from sklearn.model_selection import train_test_split as tts
 x_train,x_val,y_train,y_val = tts(x,y,train_size = 0.8, shuffle = True)
 
 #2. 모델구성
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D, LeakyReLU, Reshape
-
-drop = 0.3
-model = Sequential()
-model.add(Conv2D(1024,2,padding = 'same', activation = 'relu', input_shape = (x_train.shape[1],x_train.shape[2],x_train.shape[3])))
-model.add(Dropout(drop))
-model.add(Conv2D(512,2,padding = 'same', activation = 'relu'))
-model.add(Dropout(drop))
-model.add(Conv2D(256,2,padding = 'same', activation = 'relu'))
-model.add(Conv2D(128,2,padding = 'same', activation = 'relu'))
-model.add(Flatten())
-model.add(Dense(4096, activation = 'relu'))
-model.add(Dropout(drop))
-model.add(Dense(2048, activation = 'relu'))
-model.add(Dense(1024, activation = 'relu'))
-model.add(Dense(512, activation = 'relu'))
-model.add(Dense(256, activation = 'relu'))
-model.add(Dense(2*48))
-model.add(Reshape((2,48)))
-# model.summary()
-
-#3. 컴파일 훈련
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-es = EarlyStopping(monitor = 'val_loss', patience = 20)
-lr = ReduceLROnPlateau(monitor = 'val_loss', factor = 0.5, patience = 10, verbose = 1)
-model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
 
 # 모델 9번 돌리기 
 d = []
 for l in range(9):
-    cp = ModelCheckpoint(filepath = '../dacon/data/modelcheckpoint/dacon_ts%d_%d_0119.hdf5'%(timestep,l),monitor='val_loss', save_best_only=True)
-    model.fit(x,y,epochs= 1000, validation_split=0.2, batch_size =8, callbacks = [es,lr,cp], verbose = 2)
+    model = load_model(filepath = '../dacon/data/modelcheckpoint/dacon_ts%d_%d_0119.hdf5'%(timestep,l))
 
     c = []
     for i in range(81):
@@ -130,5 +104,5 @@ for i in range(81):
                 x = df.quantile(q = ((l+1)/10.),axis = 0)[0]
                 df_sub.iloc[[i*96+j*48+k],[l]] = x
 
-df_sub.to_csv('./practice/dacon/data/submit.csv')
+df_sub.to_csv('./practice/dacon/data/submit_0119.csv')
 
