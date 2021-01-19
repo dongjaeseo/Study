@@ -78,7 +78,7 @@ model.compile(loss = 'mse', optimizer = 'adam', metrics = ['mae'])
 d = []
 for l in range(9):
     cp = ModelCheckpoint(filepath = '../dacon/data/modelcheckpoint/dacon_ts%d_%d_0119.hdf5'%(timestep,l),monitor='val_loss', save_best_only=True)
-    model.fit(x,y,epochs= 1000, validation_split=0.2, batch_size =8, callbacks = [es,lr,cp], verbose = 2)
+    model.fit(x,y,epochs= 1000, validation_split=0.2, batch_size =4, callbacks = [es,lr,cp], verbose = 2)
 
     c = []
     for i in range(81):
