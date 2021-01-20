@@ -104,7 +104,7 @@ def mymodel():
 #3. 컴파일 훈련
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 es = EarlyStopping(monitor = 'val_loss', patience = 10)
-lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 5, factor = 0.4, verbose = 1)
+lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 5, factor = 0.3, verbose = 1)
 epochs = 1000
 bs = 32
 
