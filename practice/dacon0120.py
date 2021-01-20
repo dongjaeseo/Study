@@ -88,22 +88,25 @@ from tensorflow.keras.layers import Dense, Flatten, Dropout, Conv1D
 
 def mymodel():
     model = Sequential()
-    model.add(Conv1D(32,2,padding = 'same', activation = 'relu',input_shape = (1,8)))
-    model.add(Conv1D(32,2,padding = 'same', activation = 'relu'))
-    model.add(Conv1D(32,2,padding = 'same', activation = 'relu'))
+    model.add(Conv1D(256,2,padding = 'same', activation = 'relu',input_shape = (1,8)))
+    model.add(Conv1D(128,2,padding = 'same', activation = 'relu'))
+    model.add(Conv1D(64,2,padding = 'same', activation = 'relu'))
     model.add(Conv1D(32,2,padding = 'same', activation = 'relu'))
     model.add(Flatten())
+    model.add(Dense(128, activation = 'relu'))
+    model.add(Dense(64, activation = 'relu'))
     model.add(Dense(32, activation = 'relu'))
-    model.add(Dense(32, activation = 'relu'))
+    model.add(Dense(16, activation = 'relu'))
+    model.add(Dense(8, activation = 'relu'))
     model.add(Dense(1))
     return model
 
 #3. 컴파일 훈련
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
-es = EarlyStopping(monitor = 'val_loss', patience = 20)
-lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.4, verbose = 1)
+es = EarlyStopping(monitor = 'val_loss', patience = 10)
+lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 5, factor = 0.4, verbose = 1)
 epochs = 1000
-bs = 8
+bs = 32
 
 
 # 내일!!
@@ -137,3 +140,9 @@ num_temp2 = df_temp2.to_numpy()
 submission.loc[submission.id.str.contains("Day8"), "q_0.1":] = num_temp2
         
 submission.to_csv('./practice/dacon/data/111.csv', index = False)
+
+print('(ง˙∇˙)ว {오늘 안에 조지고만다!!!]')
+print('(ง˙∇˙)ว {오늘 안에 조지고만다!!!]')
+print('(ง˙∇˙)ว {오늘 안에 조지고만다!!!]')
+print('(ง˙∇˙)ว {오늘 안에 조지고만다!!!]')
+print('(ง˙∇˙)ว {오늘 안에 조지고만다!!!]')
