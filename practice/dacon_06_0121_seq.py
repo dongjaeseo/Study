@@ -52,9 +52,6 @@ def preprocess_data(data, is_train = True):
 
 df_train = preprocess_data(train)
 
-tmp = pd.DataFrame()
-for i in range():
-    for j in range()
     
 # x_train = df_train.to_numpy()
 

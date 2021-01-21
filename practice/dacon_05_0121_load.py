@@ -115,7 +115,7 @@ from tensorflow.keras.layers import Dense, Flatten, Dropout, Conv1D
 # 내일!!
 x = []
 for i in quantiles:
-    filepath_cp = f'../dacon/data/modelcheckpoint/dacon_05_y1_quantile_{i:.1f}.hdf5'
+    filepath_cp = f'../dacon/data/modelcheckpoint/dacon_06_y1_quantile_{i:.1f}.hdf5'
     model = load_model(filepath_cp, compile = False)
     model.compile(loss = lambda y_true,y_pred: quantile_loss(i,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(i,y,y_pred)])
     pred = pd.DataFrame(model.predict(x_test).round(2))
@@ -128,7 +128,7 @@ submission.loc[submission.id.str.contains("Day7"), "q_0.1":] = num_temp1
 x = []
 # 모레!!
 for i in quantiles:
-    filepath_cp = f'../dacon/data/modelcheckpoint/dacon_05_y2_quantile_{i:.1f}.hdf5'
+    filepath_cp = f'../dacon/data/modelcheckpoint/dacon_06_y2_quantile_{i:.1f}.hdf5'
     model = load_model(filepath_cp, compile = False)
     model.compile(loss = lambda y_true,y_pred: quantile_loss(i,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(i,y,y_pred)])
     pred = pd.DataFrame(model.predict(x_test).round(2))
@@ -138,7 +138,7 @@ df_temp2[df_temp2<0] = 0
 num_temp2 = df_temp2.to_numpy()
 submission.loc[submission.id.str.contains("Day8"), "q_0.1":] = num_temp2
         
-submission.to_csv('./practice/dacon/data/0121_newGHI.csv', index = False)
+submission.to_csv('./practice/dacon/data/0121_newGHI_STD.csv', index = False)
 
 print('(ง˙∇˙)ว {오늘 안에 조지고만다!!!]')
 print('(ง˙∇˙)ว {오늘 안에 조지고만다!!!]')
