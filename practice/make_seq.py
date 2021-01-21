@@ -61,7 +61,7 @@ def preprocess_data(data, is_train = True):
 
     elif is_train == False:
         temp = temp[['Time','TARGET','GHI','DHI','DNI','WS','RH','T']]
-        return temp.iloc[-48:, :]
+        return temp.iloc[-48*day:, :]
 
 df_train = preprocess_data(train)
 
@@ -77,5 +77,5 @@ x_test = pd.concat(df_test)
 train = split_to_seq(df_train)
 test = split_to_seq(x_test)
 
-print(train.shape)
-print(test.shape)
+# print(train.shape)(48, 1093, 10)
+# print(test.shape) #(48, 324, 8)
