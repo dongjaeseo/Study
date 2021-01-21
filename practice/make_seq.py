@@ -60,22 +60,25 @@ def preprocess_data(data, is_train = True):
         return temp.iloc[:-96]
 
     elif is_train == False:
-        temp = temp[['Time','TARGET','GHI','DHI','DNI','WS','RH','T']]
         return temp.iloc[-48*day:, :]
 
 df_train = preprocess_data(train)
+
 
 df_test = []
 for i in range(81):
     file_path = './practice/dacon/data/test/%d.csv'%i
     temp = pd.read_csv(file_path)
-    temp = preprocess_data(temp, is_train=False)
+    temp = preprocess_data(temp,is_train=False)
+    temp = split_to_seq(temp)
     df_test.append(temp)
 
-x_test = pd.concat(df_test)
+df_test = np.array(df_test)
+print(df_test.shape) # (81, 48, 4, 8)
 
-train = split_to_seq(df_train)
-test = split_to_seq(x_test)
+
+# train = split_to_seq(df_train)
+# test = split_to_seq(x_test)
 
 # print(train.shape)(48, 1093, 10)
 # print(test.shape) #(48, 324, 8)
