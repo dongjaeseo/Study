@@ -128,22 +128,8 @@ def quantile_loss(q, y_true, y_pred):
 quantiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 
 #2. 모델링
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Flatten, Dropout, Conv1D
-def mymodel():
-    model = Sequential()
-    model.add(Conv1D(256,2,padding = 'same', activation = 'relu',input_shape = (day,8)))
-    model.add(Conv1D(128,2,padding = 'same', activation = 'relu'))
-    model.add(Conv1D(64,2,padding = 'same', activation = 'relu'))
-    model.add(Conv1D(32,2,padding = 'same', activation = 'relu'))
-    model.add(Flatten())
-    model.add(Dense(128, activation = 'relu'))
-    model.add(Dense(64, activation = 'relu'))
-    model.add(Dense(32, activation = 'relu'))
-    model.add(Dense(16, activation = 'relu'))
-    model.add(Dense(8, activation = 'relu'))
-    model.add(Dense(1))
-    return model
 
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 es = EarlyStopping(monitor = 'val_loss', patience = 20)
@@ -151,20 +137,20 @@ lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.25, verbo
 epochs = 1000
 bs = 32
 
+
 for i in range(48):
     x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
     # 내일!
     for j in quantiles:
-        model = mymodel()
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_{i:2d}_y1seq_{j:.1f}.hdf5'
-        cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_{i:1d}_y1seq_{j:.1f}.hdf5'
+        model = load_model(filepath_cp, compile = False)
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-        model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
 
     # 모레!
     for j in quantiles:
-        model = mymodel()
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_{i:2d}_y2seq_{j:.1f}.hdf5'
-        cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_{i:1d}_y2seq_{j:.1f}.hdf5'
+        model = load_model(filepath_cp, compile = False)
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-        model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
+
+# Day7_0h00m  << 0 
+# Day7_{int(i/2)}h{(i%2)*30}m
