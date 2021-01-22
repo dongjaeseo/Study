@@ -2,15 +2,21 @@ import numpy as np
 import pandas as pd
 import tensorflow.keras.backend as K
 
+#### 매일 같은 시간대의 데이터끼리만 묶어서 시계열로 만드는 모델! 훈련시간 거의 두시간;;;
+
 train = pd.read_csv('./practice/dacon/data/train/train.csv')
 submission = pd.read_csv('./practice/dacon/data/sample_submission.csv')
 
-day = 4 # 예측을 위한 일 수
+day = 6 # 시계열로 만들 일수!! 여기서 조정해준다!!
 
 from sklearn.preprocessing import StandardScaler
 scale = StandardScaler()
 
-def split_to_seq(data):
+ # 48스텝씩 건너뛰면서 같은 시간대끼리만 묶어주는 함수!
+ # 예를들어 1095 일치의 트레인 데이터를 넣으면
+ # (00시00분*1095,칼럼수) ~ (23시30분*1095,칼럼수) 이런 묶음으로 잘라준다!!
+ # 주의: 데이터프레임을 넣으면 np.array 로 나온다!!
+def split_to_seq(data): 
     tmp = []
     for i in range(48):
         tmp1 = pd.DataFrame()
@@ -23,7 +29,10 @@ def split_to_seq(data):
         x = tmp1.to_numpy()
         tmp.append(x)
     return np.array(tmp)
-def make_cos(dataframe): # 특정 열이 해가 뜨고 해가지는 시간을 가지고 각 시간의 cos를 계산해주는 함수!!
+
+# 특정 열이 해가 뜨고 해가지는 시간을 가지고 각 시간의 cos를 계산해주는 함수!!
+# 해가 뜨는시간에 90도, 지는시간에 90도, 중간에는 0도!!
+def make_cos(dataframe): 
     dataframe /=dataframe
     c = dataframe.dropna()
     d = c.to_numpy()
@@ -42,6 +51,10 @@ def make_cos(dataframe): # 특정 열이 해가 뜨고 해가지는 시간을 �
     dataframe = dataframe.replace(to_replace = np.NaN, value = 0)
     dataframe.loc[dataframe['cos'] == 1] = d
     return dataframe
+
+# 베이스라인을 베껴왔다
+# 1. 코스를 넣어서 GHI계산하고
+# 2. 트레인이면 타겟값들을 붙여주고 테스트면 위에서 정한 일수*48 데이터를 리턴한다!!
 def preprocess_data(data, is_train = True):
     a = pd.DataFrame()
     for i in range(int(len(data)/48)):
@@ -66,13 +79,18 @@ def preprocess_data(data, is_train = True):
         return temp.iloc[-48*day:, :]
 
 df_train = preprocess_data(train)
-# scale.fit_transform(df_train.iloc[:,:-2])
+scale.fit(df_train.iloc[:,:-2])
+df_train.iloc[:,:-2] = scale.transform(df_train.iloc[:,:-2])
 
+# 81개의 테스트일수를 (81, 48, 일수, 8) 로 나눠준다
+# 추후에 48개의 모델에 81번 돌린다!! 인풋 : (1, 일수, 8)
 df_test = []
 for i in range(81):
     file_path = './practice/dacon/data/test/%d.csv'%i
     temp = pd.read_csv(file_path)
     temp = preprocess_data(temp,is_train=False)
+    temp = scale.transform(temp)
+    temp = pd.DataFrame(temp)
     temp = split_to_seq(temp)
     df_test.append(temp)
 
@@ -95,6 +113,7 @@ def split_xy(data,timestep):
         y2.append(tmp_y2)
     return(np.array(x),np.array(y1),np.array(y2))
 
+# 모델을 48번 돌릴것이기 때문에 트레인x 를 (48, 훈련수, 일수, 8) 로 잘라줄 것이다~!
 x,y1,y2 = [],[],[]
 for i in range(48):
     tmp1,tmp2,tmp3 = split_xy(train[i],day)
@@ -102,23 +121,10 @@ for i in range(48):
     y1.append(tmp2)
     y2.append(tmp3)
 
-x = np.array(x)
-y1 = np.array(y1)
-y2 = np.array(y2)
-# print(x.shape, test.shape, y1.shape, y2.shape) (48, 1090, 4, 8) (81, 48, 4, 8) (48, 1090, 1) (48, 1090, 1)
-
-# def split_x(data,timestep):
-#     x = []
-#     for i in range(len(data)):
-#         x_end = i + timestep
-#         if x_end>len(data):
-#             break
-#         tmp_x = data[i:x_end]
-#         x.append(tmp_x)
-#     return(np.array(x))
-
-# x_test = split_x(x_test,1)
-# # y1 을 내일의 타겟, y2 를 모레의 타겟!!
+# 이러면 x, y1, y2 에 각각 >> 결국 인풋은 (일수,8) 아웃풋은 (1,) 쉐이프!!
+x = np.array(x) # (48, 훈련수, 일수, 8)
+y1 = np.array(y1) # (48, 훈련수, 1)
+y2 = np.array(y2) # (48, 훈련수, 1)
 
 from sklearn.model_selection import train_test_split as tts
 
@@ -146,10 +152,10 @@ def mymodel():
     return model
 
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
-es = EarlyStopping(monitor = 'val_loss', patience = 20)
+es = EarlyStopping(monitor = 'val_loss', patience = 30)
 lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.25, verbose = 1)
 epochs = 1000
-bs = 32
+bs = 64
 
 for i in range(48):
     x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
