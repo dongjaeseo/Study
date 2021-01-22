@@ -7,7 +7,7 @@ import tensorflow.keras.backend as K
 train = pd.read_csv('./practice/dacon/data/train/train.csv')
 submission = pd.read_csv('./practice/dacon/data/sample_submission.csv')
 
-day = 6 # 시계열로 만들 일수!! 여기서 조정해준다!!
+day = 7 # 시계열로 만들 일수!! 여기서 조정해준다!!
 
 from sklearn.preprocessing import StandardScaler
 scale = StandardScaler()
@@ -63,9 +63,15 @@ def preprocess_data(data, is_train = True):
         tmp['cos'] = make_cos(tmp)
         a = pd.concat([a,tmp])
     data['cos'] = a
+    c = 243.12
+    b = 17.62
+    gamma = (b * (data['T']) / (c + (data['T']))) + np.log(data['RH'] / 100)
+    dp = ( c * gamma) / (b - gamma)
+    data.insert(1,'Td',dp)
+    data.insert(1,'T-Td',data['T']-data['Td'])
     data.insert(1,'GHI',data['DNI']*data['cos']+data['DHI'])
     temp = data.copy()
-    temp = temp[['TARGET','GHI','DHI','DNI','RH','T']]
+    temp = temp[['TARGET','GHI','DHI','DNI','RH','T','T-Td']]
 
     if is_train == True:
         temp['TARGET1'] = temp['TARGET'].shift(-48).fillna(method = 'ffill')
@@ -136,7 +142,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten, Dropout, Conv1D
 def mymodel():
     model = Sequential()
-    model.add(Conv1D(256,2,padding = 'same', activation = 'relu',input_shape = (day,6)))
+    model.add(Conv1D(256,2,padding = 'same', activation = 'relu',input_shape = (day,7)))
     model.add(Conv1D(128,2,padding = 'same', activation = 'relu'))
     model.add(Conv1D(64,2,padding = 'same', activation = 'relu'))
     model.add(Conv1D(32,2,padding = 'same', activation = 'relu'))
@@ -160,7 +166,7 @@ for i in range(48):
     # 내일!
     for j in quantiles:
         model = mymodel()
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_{i:2d}_y1seq_{j:.1f}.hdf5'
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07_{i:2d}_y1seq_{j:.1f}.hdf5'
         cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
@@ -168,25 +174,7 @@ for i in range(48):
     # 모레!
     for j in quantiles:
         model = mymodel()
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_{i:2d}_y2seq_{j:.1f}.hdf5'
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07_{i:2d}_y2seq_{j:.1f}.hdf5'
         cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
-
-# i = 19
-# j = 0.6
-# x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
-# model = mymodel()
-# filepath_cp = f'../dacon/data/modelcheckpoint/dacon_{i:2d}_y1seq_{j:.1f}.hdf5'
-# cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
-# model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-# model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
-
-# i = 26
-# j = 0.4
-# x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
-# model = mymodel()
-# filepath_cp = f'../dacon/data/modelcheckpoint/dacon_{i:2d}_y2seq_{j:.1f}.hdf5'
-# cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
-# model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-# model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
