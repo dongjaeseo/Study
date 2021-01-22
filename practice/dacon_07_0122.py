@@ -158,7 +158,7 @@ def mymodel():
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 es = EarlyStopping(monitor = 'val_loss', patience = 30)
 lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.25, verbose = 1)
-epochs = 1000
+epochs = 10000
 bs = 64
 
 for i in range(48):
@@ -166,7 +166,7 @@ for i in range(48):
     # 내일!
     for j in quantiles:
         model = mymodel()
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07_{i:2d}_y1seq_{j:.1f}.hdf5'
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07/dacon_07_{i:2d}_y1seq_{j:.1f}.hdf5'
         cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
@@ -174,7 +174,7 @@ for i in range(48):
     # 모레!
     for j in quantiles:
         model = mymodel()
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07_{i:2d}_y2seq_{j:.1f}.hdf5'
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07/dacon_07_{i:2d}_y2seq_{j:.1f}.hdf5'
         cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
