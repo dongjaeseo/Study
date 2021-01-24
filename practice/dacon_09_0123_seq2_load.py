@@ -71,7 +71,7 @@ def preprocess_data(data, is_train = True):
     data.insert(1,'T-Td',data['T']-data['Td'])
     data.insert(1,'GHI',data['DNI']*data['cos']+data['DHI'])
     temp = data.copy()
-    temp = temp[['TARGET','GHI','DHI','DNI','RH','T-Td']]
+    temp = temp[['TARGET','GHI','DHI','DNI','RH','T','T-Td']]
 
     if is_train == True:
         temp['TARGET1'] = temp['TARGET'].shift(-48).fillna(method = 'ffill')
@@ -145,7 +145,7 @@ for i in range(48):
     print(f'{int(i/2)}시 {i%2*30}분 시간대 진행중...')
     # 내일!
     for j in quantiles:
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_08/dacon_08_{i:2d}_y1seq_{j:.1f}.hdf5'
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_09/dacon_09_{i:2d}_y1seq_{j:.1f}.hdf5'
         model = load_model(filepath_cp, compile = False)
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         x = []
@@ -163,7 +163,7 @@ for i in range(48):
 
     # 모레!
     for j in quantiles:
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_08/dacon_08_{i:2d}_y2seq_{j:.1f}.hdf5'
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_09/dacon_09_{i:2d}_y2seq_{j:.1f}.hdf5'
         model = load_model(filepath_cp, compile = False)
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
         x = []
@@ -173,10 +173,10 @@ for i in range(48):
         df_temp2 = pd.DataFrame(model.predict(x).round(2))
         # df_temp1 = pd.concat(pred, axis = 0)
         df_temp2[df_temp2<0] = 0
-        ㅕnum_temp2 = df_temp2.to_numpy()
+        num_temp2 = df_temp2.to_numpy()
         if i%2 == 0:
             submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h00m"), [f"q_{j:.1f}"]] = num_temp2
         elif i%2 == 1:
             submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
 
-submission.to_csv('./practice/dacon/data/0122_NoT.csv', index = False)
+submission.to_csv('./practice/dacon/data/0124_time_serial_7days2.csv', index = False)

@@ -71,7 +71,7 @@ def preprocess_data(data, is_train = True):
     data.insert(1,'T-Td',data['T']-data['Td'])
     data.insert(1,'GHI',data['DNI']*data['cos']+data['DHI'])
     temp = data.copy()
-    temp = temp[['TARGET','GHI','DHI','DNI','RH','T-Td']]
+    temp = temp[['TARGET','GHI','DHI','DNI','RH','T','T-Td']]
 
     if is_train == True:
         temp['TARGET1'] = temp['TARGET'].shift(-48).fillna(method = 'ffill')
@@ -137,46 +137,44 @@ def quantile_loss(q, y_true, y_pred):
     return K.mean(K.maximum(q*err, (q-1)*err), axis=-1)
 quantiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 
-
 #2. 모델링
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten, Dropout, Conv1D
+def mymodel():
+    model = Sequential()
+    model.add(Conv1D(256,2,padding = 'same', activation = 'relu',input_shape = (day,7)))
+    model.add(Conv1D(128,2,padding = 'same', activation = 'relu'))
+    model.add(Conv1D(64,2,padding = 'same', activation = 'relu'))
+    model.add(Conv1D(32,2,padding = 'same', activation = 'relu'))
+    model.add(Flatten())
+    model.add(Dense(128, activation = 'relu'))
+    model.add(Dense(64, activation = 'relu'))
+    model.add(Dense(32, activation = 'relu'))
+    model.add(Dense(16, activation = 'relu'))
+    model.add(Dense(8, activation = 'relu'))
+    model.add(Dense(1))
+    return model
+
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+es = EarlyStopping(monitor = 'val_loss', patience = 30)
+lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.25, verbose = 1)
+epochs = 1000000
+bs = 32
 
 for i in range(48):
-    print(f'{int(i/2)}시 {i%2*30}분 시간대 진행중...')
+    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
     # 내일!
     for j in quantiles:
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_08/dacon_08_{i:2d}_y1seq_{j:.1f}.hdf5'
-        model = load_model(filepath_cp, compile = False)
+        model = mymodel()
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_09/dacon_09_{i:2d}_y1seq_{j:.1f}.hdf5'
+        cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-        x = []
-        for k in range(81):
-            x.append(test[k,i])
-        x = np.array(x)
-        df_temp1 = pd.DataFrame(model.predict(x).round(2))
-        # df_temp1 = pd.concat(pred, axis = 0)
-        df_temp1[df_temp1<0] = 0
-        num_temp1 = df_temp1.to_numpy()
-        if i%2 == 0:
-            submission.loc[submission.id.str.contains(f"Day7_{int(i/2)}h00m"), [f"q_{j:.1f}"]] = num_temp1
-        elif i%2 == 1:
-            submission.loc[submission.id.str.contains(f"Day7_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp1
+        model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
 
     # 모레!
     for j in quantiles:
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_08/dacon_08_{i:2d}_y2seq_{j:.1f}.hdf5'
-        model = load_model(filepath_cp, compile = False)
+        model = mymodel()
+        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_09/dacon_09_{i:2d}_y2seq_{j:.1f}.hdf5'
+        cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
         model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-        x = []
-        for k in range(81):
-            x.append(test[k,i])
-        x = np.array(x)
-        df_temp2 = pd.DataFrame(model.predict(x).round(2))
-        # df_temp1 = pd.concat(pred, axis = 0)
-        df_temp2[df_temp2<0] = 0
-        ㅕnum_temp2 = df_temp2.to_numpy()
-        if i%2 == 0:
-            submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h00m"), [f"q_{j:.1f}"]] = num_temp2
-        elif i%2 == 1:
-            submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
-
-submission.to_csv('./practice/dacon/data/0122_NoT.csv', index = False)
+        model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
