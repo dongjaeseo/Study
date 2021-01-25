@@ -179,4 +179,4 @@ for i in range(48):
         elif i%2 == 1:
             submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
 
-submission.to_csv('./practice/dacon/data/0124_time_serial_7days2.csv', index = False)
+submission.to_csv('./practice/dacon/data/0125_time_serial_7days2.csv', index = False)

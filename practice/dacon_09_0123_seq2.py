@@ -159,22 +159,40 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 es = EarlyStopping(monitor = 'val_loss', patience = 30)
 lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.25, verbose = 1)
 epochs = 1000000
-bs = 32
+bs = 64
 
-for i in range(48):
-    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
-    # 내일!
-    for j in quantiles:
-        model = mymodel()
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_09/dacon_09_{i:2d}_y1seq_{j:.1f}.hdf5'
-        cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
-        model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-        model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
+# for i in range(48):
+    # x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
+    # # 내일!
+    # for j in quantiles:
+    #     model = mymodel()
+    #     filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07/dacon_07_{i:2d}_y1seq_{j:.1f}.hdf5'
+    #     cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
+    #     model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
+    #     model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
 
-    # 모레!
-    for j in quantiles:
-        model = mymodel()
-        filepath_cp = f'../dacon/data/modelcheckpoint/dacon_09/dacon_09_{i:2d}_y2seq_{j:.1f}.hdf5'
-        cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
-        model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
-        model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
+    # # 모레!
+    # for j in quantiles:
+    #     model = mymodel()
+    #     filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07/dacon_07_{i:2d}_y2seq_{j:.1f}.hdf5'
+    #     cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
+    #     model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
+    #     model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
+
+mylist = ([16,0.5],[16,0.8],[17,0.5],[19,0.4],[19,0.6],[20,0.7],[21,0.5],[21,0.6],[22,0.5],[22,0.6],[22,0.8],[24,0.5],[24,0.6],[27,0.3],[29,0.7],[30,0.7],[30,0.8],[31,0.7],[32,0.7],[33,0.3],[33,0.5],[33,0.6],[33,0.7])
+for i,j in mylist:
+    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True)
+    model = mymodel()
+    filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07/dacon_07_{i:2d}_y1seq_{j:.1f}.hdf5'
+    cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
+    model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
+    model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
+
+mylist2 = ([16,0.4],[16,0.5],[17,0.5],[17,0.6],[18,0.7],[19,0.4],[19,0.7],[20,0.6],[21,0.6],[21,0.7],[24,0.3],[26,0.6],[27,0.5],[27,0.6],[28,0.4],[28,0.5],[30,0.3],[30,0.6],[30,0.7],[31,0.6],[31,0.7],[32,0.2],[32,0.7],[33,0.2],[33,0.5],[33,0.6],[33,0.7])
+for i,j in mylist2:
+    x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True)
+    model = mymodel()
+    filepath_cp = f'../dacon/data/modelcheckpoint/dacon_07/dacon_07_{i:2d}_y1seq_{j:.1f}.hdf5'
+    cp = ModelCheckpoint(filepath_cp,save_best_only=True,monitor = 'val_loss')
+    model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
+    model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
