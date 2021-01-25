@@ -179,7 +179,7 @@ bs = 64
     #     model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
     #     model.fit(x_train,y2_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y2_val),callbacks = [es,cp,lr]) 
 
-mylist = ([16,0.5],[17,0.5],[18,0.7],[19,0.7],[20,0.7],[21,0.7],[22,0.6],[24,0.2],[24,0.3],[29,0.4],[29,0.6],[30,0.7],[30,0.8],[31,0.7],[32,0.5],[33,0.6],[33,0.7])
+mylist = ([33,0.7],[33,0.8])
 for i,j in mylist:
     x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True)
     model = mymodel()
@@ -188,7 +188,7 @@ for i,j in mylist:
     model.compile(loss = lambda y_true,y_pred: quantile_loss(j,y_true,y_pred), optimizer = 'adam', metrics = [lambda y,y_pred: quantile_loss(j,y,y_pred)])
     model.fit(x_train,y1_train,epochs = epochs, batch_size = bs, validation_data = (x_val,y1_val),callbacks = [es,cp,lr])
 
-mylist2 = ([15,0.7],[16,0.4],[16,0.5],[16,0.6],[17,0.6],[18,0.2],[18,0.3],[27,0.6],[31,0.7],[32,0.7],[33,0.8])
+mylist2 = ([16,0.7],[16,0.8],[17,0.7],[31,0.7],[31,0.8])
 for i,j in mylist2:
     x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True)
     model = mymodel()
