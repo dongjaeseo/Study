@@ -7,7 +7,7 @@ import tensorflow.keras.backend as K
 train = pd.read_csv('./practice/dacon/data/train/train.csv')
 submission = pd.read_csv('./practice/dacon/data/sample_submission.csv')
 
-day = 5 # 시계열로 만들 일수!! 여기서 조정해준다!!
+day = 7 # 시계열로 만들 일수!! 여기서 조정해준다!!
 
 from sklearn.preprocessing import StandardScaler
 scale = StandardScaler()
