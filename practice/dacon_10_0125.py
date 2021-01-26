@@ -16,7 +16,7 @@ scale = StandardScaler()
  # 예를들어 1095 일치의 트레인 데이터를 넣으면
  # (00시00분*1095,칼럼수) ~ (23시30분*1095,칼럼수) 이런 묶음으로 잘라준다!!
  # 주의: 데이터프레임을 넣으면 np.array 로 나온다!!
-def split_to_seq(data): 
+def split_to_seq(data):
     tmp = []
     for i in range(48):
         tmp1 = pd.DataFrame()

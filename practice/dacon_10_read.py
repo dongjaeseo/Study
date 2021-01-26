@@ -20,5 +20,5 @@ for i in range(7776):
         df.iloc[[i],[j]] = (pd.DataFrame(a).astype('float32').quantile(0.5,axis = 0)[0]).astype('float32')
         
 y = pd.DataFrame(df, index = None, columns = None)
-y.to_csv('./practice/dacon/data/jjin_mak.csv')     
+y.to_csv('./practice/dacon/data/jjin_mak.csv')
 
