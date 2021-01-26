@@ -7,7 +7,7 @@ import tensorflow.keras.backend as K
 train = pd.read_csv('./practice/dacon/data/train/train.csv')
 submission = pd.read_csv('./practice/dacon/data/sample_submission.csv')
 
-day = 5 # 시계열로 만들 일수!! 여기서 조정해준다!!
+day = 7 # 시계열로 만들 일수!! 여기서 조정해준다!!
 
 from sklearn.preprocessing import StandardScaler
 scale = StandardScaler()
@@ -140,7 +140,7 @@ quantiles = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 #2. 모델링
 from tensorflow.keras.models import load_model
 
-for l in range(1,6):
+for l in range(6,8):
     for i in range(48):
         print(f'{int(i/2)}시 {i%2*30}분 시간대 진행중...')
         # 내일!
@@ -179,4 +179,4 @@ for l in range(1,6):
             elif i%2 == 1:
                 submission.loc[submission.id.str.contains(f"Day8_{int(i/2)}h30m"), [f"q_{j:.1f}"]] = num_temp2
 
-    submission.to_csv(f'./practice/dacon/data/0126_{l}.csv', index = False)
+    submission.to_csv(f'./practice/dacon/data/000_{l-6}.csv', index = False)
