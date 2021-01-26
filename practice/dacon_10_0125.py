@@ -161,7 +161,7 @@ lr = ReduceLROnPlateau(monitor = 'val_loss', patience = 10, factor = 0.25, verbo
 epochs = 1000000
 bs = 64
 
-for k in range(5,7):
+for k in range(7):
     for i in range(48):
         x_train, x_val, y1_train, y1_val, y2_train, y2_val = tts(x[i],y1[i],y2[i], train_size = 0.7,shuffle = True, random_state = 0)
         # 내일!

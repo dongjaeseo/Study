@@ -3,14 +3,14 @@ import pandas as pd
 
 
 x = []
-for i in range(1,8):
-    df = pd.read_csv(f'./practice/dacon/data/0126_{i}.csv', index_col=0, header=0)
+for i in range(7):
+    df = pd.read_csv(f'./practice/dacon/data/000_{i}.csv', index_col=0, header=0)
     data = df.to_numpy()
     x.append(data)
 
 x = np.array(x)
 
-df = pd.read_csv(f'./practice/dacon/data/0126_{i}.csv', index_col=0, header=0)
+df = pd.read_csv(f'./practice/dacon/data/000_{i}.csv', index_col=0, header=0)
 for i in range(7776):
     for j in range(9):
         a = []
