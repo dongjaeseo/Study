@@ -68,18 +68,36 @@ import datetime
 
 
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-# filepath = '../Data/modelcheckpoint/'
-filename = '_{epoch:02d}-{val_loss:.4f}.hdf5'
-# modelpath = ''.join([filepath,'k45_',date_time,filename])
+filepath='../data/modelcheckpoint/'
+filename='_{epoch:02d}-{val_loss:.4f}.hdf5'
+modelpath = "".join([filepath, "k45_", '{timer}', filename])
 
-# print(modelpath)
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.python.util.tf_export import keras_export
+from tensorflow.python.distribute import distributed_file_utils
+@keras_export('keras.callbacks.ModelCheckpoint')
+class MyModelCheckpoint(tf.keras.callbacks.ModelCheckpoint):
+    def _get_file_path(self, epoch, logs):
+        """Returns the file path for checkpoint."""
+        # pylint: disable=protected-access
+        try:
+        # `filepath` may contain placeholders such as `{epoch:02d}` and
+        # `{mape:.2f}`. A mismatch between logged metrics and the path's
+        # placeholders can cause formatting to fail.
+            file_path = self.filepath.format(epoch=epoch + 1, timer=datetime.datetime.now().strftime('%m%d_%H%M%S'), **logs)
+        except KeyError as e:
+            raise KeyError('Failed to format this callback filepath: "{}". '
+                        'Reason: {}'.format(self.filepath, e))
+        self._write_filepath = distributed_file_utils.write_filepath(
+            file_path, self.model.distribute_strategy)
+        return self._write_filepath
 
-# modelpath = '../Data/modelcheckpoint/k45_mnist_{epoch:02d}-{val_loss:.4f}.hdf5'
-es = EarlyStopping(monitor = 'val_loss', patience = 10, mode = 'auto')
-# cp = ModelCheckpoint(filepath=''.join(['../Data/modelcheckpoint/','k45_',datetime.datetime.now().strftime("%m%d_%H%M%S"),filename]), monitor = 'val_loss', save_best_only=True, mode = 'auto')
+es = EarlyStopping(monitor = 'val_loss', patience = 10)
+cp = MyModelCheckpoint(filepath=modelpath, monitor='val_loss', save_best_only=True, mode='auto')
 
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])
-hist = model.fit(x_train,y_train, epochs = 1000, batch_size = 32 ,validation_data=(x_val,y_val), verbose = 2, callbacks = [es,ModelCheckpoint(filepath=''.join(['../Data/modelcheckpoint/','k45_',datetime.datetime.now().strftime("%m%d_%H%M%S"),filename]), monitor = 'val_loss', save_best_only=True, mode = 'auto')])
+hist = model.fit(x_train,y_train, epochs = 1000, batch_size = 32 ,validation_data=(x_val,y_val), verbose = 2, callbacks = [es,cp])
 
 #4. 평가 예측
 loss = model.evaluate(x_test,y_test,batch_size = 32)
@@ -94,6 +112,7 @@ print('y_pred : ', y_pred)
 print('y_test : ', y_test)
 
 #시각화
+
 
 ### 폰트 깨짐 #########################################################################################
 import matplotlib

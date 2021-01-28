@@ -92,3 +92,5 @@ for i in models:
 # accuracy_score :  1.0
 # model_score :  0.9722222222222222
 # accuracy_score :  0.9722222222222222
+
+# keras score : 1, 0.97!!!

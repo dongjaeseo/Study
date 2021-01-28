@@ -80,3 +80,5 @@ for i in models:
 # accuracy_score :  0.9824561403508771
 # model_score :  0.9912280701754386
 # accuracy_score :  0.9912280701754386
+
+# keras score : 0.989!!!
