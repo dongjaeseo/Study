@@ -1,17 +1,19 @@
-# 모델은 랜덤포레스트 사용
-# 파이프라인 엮어서 25번 돌리기!!!
-# 데이터는 wine 사용!!
+# 모델 : RandomForestClassifier
+
+
 
 import numpy as np
-from sklearn.model_selection import train_test_split, GridSearchCV, KFold, RandomizedSearchCV, cross_val_score
+from sklearn.datasets import load_iris
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.datasets import load_wine
-from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.model_selection import train_test_split, KFold, cross_val_score, GridSearchCV, RandomizedSearchCV
+from sklearn.metrics import accuracy_score
+from sklearn.pipeline import make_pipeline
+
 from sklearn.ensemble import RandomForestClassifier
 import warnings
 warnings.filterwarnings('ignore')
 
-dataset = load_wine()
+dataset = load_iris()
 x = dataset.data
 y = dataset.target
 
@@ -21,11 +23,14 @@ parameters = [
     {'n_estimators' : [100,200], 'max_depth' : [6,8,10,12], 'min_samples_leaf' : [3,5,7,10], 'min_samples_split' : [2, 3, 5, 10], 'n_jobs' : [-1]}
 ]
 
+pipe = make_pipeline(MinMaxScaler(),RandomForestClassifier())
 
-# model = RandomizedSearchCV(RandomForestClassifier(), parameters, cv = kfold)
+#2. modelling
+model = RandomizedSearchCV(RandomForestClassifier(), parameters, cv = kfold)
 
-# pipe = make_pipeline(MinMaxScaler, model)
+score = cross_val_score(model, x, y, cv = kfold) # 그리드서치에서 최적의 값이 나온걸 또 5번 돌려서
 
-# score = cross_val_score(pipe, x, y, cv = kfold)
+print('교차검증점수 : ', score)
+# scores = cross_val_score(model, x_train, y_train, cv = kfold)
 
-# print(score)
+# 교차검증점수 :  [1.         0.95833333 0.875      0.95833333 0.95833333]

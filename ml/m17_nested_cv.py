@@ -18,7 +18,7 @@ y = dataset.target
 
 # x_train,x_test, y_train,y_test = train_test_split(x,y,train_size = 0.8)
 kfold = KFold(n_splits = 5, shuffle = True)
-RandomForestClassifier()
+# RandomForestClassifier()
 # parameters = [
 #     {'n_estimators' : [100,200]},
 #     {'max_depth' : [6,8,10,12]},

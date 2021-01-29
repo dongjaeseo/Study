@@ -21,15 +21,16 @@ kfold = KFold(n_splits = 5, shuffle = True)
 
 #2. modelling
 model = RandomForestClassifier()
-for train_idx, val_idx in kfold.split(x,y): 
-    # train fold, val fold 분할
-    x_train = x[train_idx]
-    x_test = x[train_idx]
-    y_train = y[train_idx]
-    y_test = y[train_idx]
 
-    scores = cross_val_score(model, x_train, y_train, cv = kfold)
-    print('score : ', scores)
+for train_idx, val_idx in kfold.split(x): 
+    x_train = x[train_idx]
+    y_train = y[train_idx]
+    x_test = x[val_idx]
+    y_test = y[val_idx]
+
+    x_train,x_test,y_train,y_test = train_test_split(x_train,y_train,train_size = 0.8)
+    # scores = cross_val_score()
+    
 
 # score :  [0.91666667 0.91666667 0.91666667 0.95833333 0.95833333]
 # score :  [1.         1.         0.875      0.95833333 0.91666667]
