@@ -16,7 +16,7 @@ x_train,x_test,y_train,y_test = train_test_split(x,y,train_size = 0.8)
 
 model1 = RandomForestClassifier(max_depth = 4)
 model1.fit(x_train,y_train)
-print('컬럼 지우기 전 스코어!! : ', model1.score(x_test,y_test))
+bef = model1.score(x_test,y_test)
 
 def plot_feature_importances_dataset(model, dataset, feature):
     n_features = dataset.data.shape[1]
@@ -33,11 +33,11 @@ def plot_feature_importances_dataset(model, dataset, feature):
 # plt.show()
 
 #################################################################################################
+
 columns = model1.feature_importances_
 print('각각의 피쳐 임포턴스!! : ', columns)
-print(dataset.feature_names)
 quantile = pd.DataFrame(columns).quantile(q = 0.25)
-df = pd.DataFrame(x).copy()
+df = pd.DataFrame(x, columns = dataset.feature_names).copy()
 
 j = 0
 numbers = []
@@ -47,6 +47,21 @@ for i in columns:
         numbers.append(j)
     j += 1
     
-df = df.drop(df.columns[numbers], axis =1)
-print(df)
-print(dataset.data)
+new_data = df.drop(df.columns[numbers], axis =1)
+feature = new_data.columns
+new_data = new_data.to_numpy()
+
+#################################################################################################
+
+x = new_data
+y = dataset.target
+
+x_train,x_test,y_train,y_test = train_test_split(x,y,train_size = 0.8)
+
+model2 = RandomForestClassifier(max_depth = 4)
+model2.fit(x_train,y_train)
+print('\n컬럼 지우기 전 스코어!! : ', bef)
+print('컬럼 지우고 난 스코어!! : ', model2.score(x_test,y_test))
+
+plot_feature_importances_dataset(model2, x, feature)
+plt.show()
