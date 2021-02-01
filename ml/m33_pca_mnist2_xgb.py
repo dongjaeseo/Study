@@ -26,7 +26,10 @@ x_train = scale.transform(x_train)
 x_test = scale.transform(x_test)
 
 model = XGBClassifier(max_depth = 4, use_label_encoder= False)
-model.fit(x_train,y_train)
+model.fit(x_train,y_train, verbose = True)
 
 print('모델 스코어!! : ', model.score(x_test,y_test))
 print(f'784중 남은 피쳐수는 {d}!!!')
+
+# 모델 스코어!! :  0.9558   
+# 784중 남은 피쳐수는 713!!!

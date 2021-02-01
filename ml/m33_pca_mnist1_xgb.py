@@ -30,3 +30,6 @@ model.fit(x_train,y_train)
 
 print('모델 스코어!! : ', model.score(x_test,y_test))
 print(f'784중 남은 피쳐수는 {d}!!!')
+
+# 모델 스코어!! :  0.9576   
+# 784중 남은 피쳐수는 154!!!
