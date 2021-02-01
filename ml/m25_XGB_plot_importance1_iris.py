@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier, plot_importance
 import warnings
 import datetime
 warnings.filterwarnings('ignore')
@@ -22,6 +22,7 @@ model1 = XGBClassifier(n_jobs = -1)
 model1.fit(x_train,y_train)
 bef = model1.score(x_test,y_test)
 
+'''
 def plot_feature_importances_dataset(model, dataset, feature):
     n_features = dataset.data.shape[1]
     plt.barh(np.arange(n_features), model.feature_importances_, align = 'center')
@@ -32,9 +33,12 @@ def plot_feature_importances_dataset(model, dataset, feature):
     plt.xlabel("Feature Importances")
     plt.ylabel("Features")
     plt.ylim(-1, n_features)
+'''
 
 # plot_feature_importances_dataset(model1, dataset, 1)
-# plt.show()
+
+plot_importance(model1)
+plt.show()
 
 #################################################################################################
 
