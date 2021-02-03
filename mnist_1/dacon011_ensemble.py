@@ -21,10 +21,10 @@ def ens_model():
     d = BatchNormalization()(d)
     d = Conv2D(32,(5,5),activation='relu',padding='same')(d)
     d = BatchNormalization()(d)
-    d = Conv2D(32,(5,5),activation='relu',padding='same')(d)
-    d = BatchNormalization()(d)
-    d = Conv2D(32,(5,5),activation='relu',padding='same')(d)
-    d = BatchNormalization()(d)
+    # d = Conv2D(32,(5,5),activation='relu',padding='same')(d)
+    # d = BatchNormalization()(d)
+    # d = Conv2D(32,(5,5),activation='relu',padding='same')(d)
+    # d = BatchNormalization()(d)
     d = MaxPooling2D(3,3)(d)
     d = Dropout(0.3)(d)
 
@@ -78,6 +78,10 @@ def ens_model():
 
     new_d = concatenate([d1,d2])
     d3 = Dense(32,activation = 'relu')(new_d)
+    d3 = BatchNormalization()(d3)    
+    d3 = Dense(32,activation = 'relu')(d3)
+    d3 = BatchNormalization()(d3)
+    d3 = Dense(32,activation = 'relu')(d3)
     d3 = Dense(10, activation = 'softmax')(d3)
     
     model = Model(inputs= [input1,input2], outputs = d3)
@@ -103,11 +107,11 @@ y1_train = train.loc[:, 'digit'].to_numpy()
 x_test = test.loc[:, '0':].to_numpy().reshape(-1,28,28,1)
 
 ens_x1_train = train.loc[:, '0':]
-ens_x1_train[ens_x1_train<160] = 0
+ens_x1_train[ens_x1_train<192] /= 2
 ens_x1_train = ens_x1_train.to_numpy().reshape(-1,28,28,1)
 
 ens_x_test = test.loc[:, '0':]
-ens_x_test[ens_x_test<160] = 0
+ens_x_test[ens_x_test<192] /= 2
 ens_x_test = ens_x_test.to_numpy().reshape(-1,28,28,1)
 
 cp = ModelCheckpoint(monitor= 'val_loss', filepath=f'../dacon_1/models/all.h5', save_best_only= True)
