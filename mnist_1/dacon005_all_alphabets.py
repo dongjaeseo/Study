@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import string
-from sklearn.model_selection import train_test_split, KFold
+from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten
@@ -37,8 +37,8 @@ submission['tmp'] = test['letter']
 alphabets = string.ascii_uppercase
 alphabets = list(alphabets)
 
-kfold = KFold(n_splits=7, random_state=33, shuffle=True)
-datagen = ImageDataGenerator(rotation_range= 20, width_shift_range= 0.1, height_shift_range= 0.1)
+kfold = StratifiedKFold(n_splits=7, random_state=33, shuffle=True)
+datagen = ImageDataGenerator(rotation_range= 10, width_shift_range= 0.2, height_shift_range= 0.2)
 datagen2 = ImageDataGenerator()
 es = EarlyStopping(monitor = 'val_loss', patience = 30)
 lr = ReduceLROnPlateau(monitor = 'val_loss', factor = 0.25, patience = 10)
@@ -74,4 +74,4 @@ mode = np.transpose(mode)
 submission.loc[:, 'digit'] = mode
 
 submission.drop('tmp', axis = 1,inplace=True)
-submission.to_csv('./mnist_1/submission1.csv', index = 0)
+submission.to_csv('./mnist_1/submission5.csv', index = 0)
