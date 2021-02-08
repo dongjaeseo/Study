@@ -23,7 +23,6 @@ def build_model(drop=0.5, optimizers = Adam, act = 'relu', lr = 0.01, nodes = 25
     for i in range(layer):
         x = Dense(nodes, activation = act, name = f'LSTM_{i}')(x)
     x = Dense(nodes, activation = act, name = 'hidden2')(x)
-    x = Dropout(drop)(x)
     x = Dense(128, activation = act, name = 'hidden3')(x)
     x = Dropout(drop)(x)
     outputs = Dense(10, activation='softmax', name = 'outputs')(x)
@@ -33,13 +32,13 @@ def build_model(drop=0.5, optimizers = Adam, act = 'relu', lr = 0.01, nodes = 25
     return model
 
 def create_hyperparameter():
-    batches = [64, 128]
+    batches = [32, 64, 128]
     optimizers = [Adam, RMSprop]
-    lr = [0.01]
-    dropout = [0.2, 0.3]
-    act = ['relu']
-    nodes = [256, 128]
-    layer_num= [2, 3]
+    lr = [0.01, 0.005]
+    dropout = [0.2, 0.3, 0.4]
+    act = ['relu','linear','tanh']
+    nodes = [16, 32, 64]
+    layer_num= [2, 3, 4, 5, 6, 7]
 
     return {'batch_size' : batches, 'optimizers' : optimizers, 'drop' : dropout, 'act': act, 'lr': lr, 'nodes' : nodes, 'layer' : layer_num}
 hyperparameters = create_hyperparameter()
@@ -58,3 +57,15 @@ print(search.best_estimator_)
 print(search.best_score_)
 acc = search.score(x_test, y_test)
 print('최종 스코어 : ', acc)
+
+# {'optimizers': <class 'tensorflow.python.keras.optimizer_v2.adam.Adam'>, 'nodes': 128, 'lr': 0.005, 'layer': 3, 'drop': 0.2, 'batch_size': 128, 'act': 'tanh'}
+# <tensorflow.python.keras.wrappers.scikit_learn.KerasClassifier object at 0x000002648373C280>
+# 0.9351166685422262
+# 79/79 [==============================] - 0s 2ms/step - loss: 0.1890 - acc: 0.9563
+# 최종 스코어 :  0.9563000202178955
+
+# {'optimizers': <class 'tensorflow.python.keras.optimizer_v2.adam.Adam'>, 'nodes': 32, 'lr': 0.005, 'layer': 5, 'drop': 0.3, 'batch_size': 64, 'act': 'tanh'}
+# <tensorflow.python.keras.wrappers.scikit_learn.KerasClassifier object at 0x000001B7EDF3B700>
+# 0.9201333324114481
+# 157/157 [==============================] - 0s 2ms/step - loss: 0.1822 - acc: 0.9542
+# 최종 스코어 :  0.954200029373169
