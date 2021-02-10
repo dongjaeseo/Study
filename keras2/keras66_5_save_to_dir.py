@@ -31,10 +31,12 @@ xy_train = train_datagen.flow_from_directory(
     '../data/image/brain/train',  
     target_size=(150,150),    
     batch_size=5,                                          # 
-    class_mode='binary'         
-    , save_to_dir='../data/image/brain_generator/train'     # ※caution※ 아래 찍어보자 부분처럼 변수를 한 번 건드려주어야 잘 저장이 된다!
+    class_mode='binary',
+    save_to_dir='../data/image/brain_generator/train'     # ※caution※ 아래 찍어보자 부분처럼 변수를 한 번 건드려주어야 잘 저장이 된다!
 )    
 # 로그 > Found 160 images belonging to 2 classes.
+
+
 
 # test_generator
 xy_test = test_datagen.flow_from_directory(

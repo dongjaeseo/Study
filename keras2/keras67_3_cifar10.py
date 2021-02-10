@@ -7,16 +7,18 @@ from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten
+from sklearn.model_selection import train_test_split
 
 #1. 데이터
 (x_train,y_train),(x_test,y_test) = cifar10.load_data()
+x_train,x_val,y_train,y_val = train_test_split(x_train,y_train,train_size = 0.8)
 
-train_datagen = ImageDataGenerator(rescale = 1/255., width_shift_range=0.2, height_shift_range=0.2,validation_split = 0.2)
+train_datagen = ImageDataGenerator(rescale = 1/255., width_shift_range=0.2, height_shift_range=0.2)
 test_datagen = ImageDataGenerator(rescale = 1/255.)
 
 batch = 25
-train_xy = train_datagen.flow(x_train,y_train,batch_size = batch, subset = 'training')
-val_xy = train_datagen.flow(x_train,y_train,batch_size = batch, subset = 'validation')
+train_xy = train_datagen.flow(x_train,y_train,batch_size = batch)
+val_xy = test_datagen.flow(x_val,y_val,batch_size = batch)
 test_xy = test_datagen.flow(x_test,y_test,batch_size = batch)
 
 #2. 모델
@@ -41,3 +43,5 @@ hist = model.fit_generator(train_xy, validation_data= val_xy, epochs = 1000, ste
         
 #4. 평가
 print('accuracy : ', model.evaluate(x_test, y_test)[1])
+
+# accuracy :  0.42980000376701355
