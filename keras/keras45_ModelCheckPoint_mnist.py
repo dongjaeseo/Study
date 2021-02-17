@@ -66,7 +66,7 @@ es = EarlyStopping(monitor = 'val_loss', patience = 10, mode = 'auto')
 cp = ModelCheckpoint(filepath=modelpath, monitor = 'val_loss', save_best_only=True, mode = 'auto')
 
 model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics = ['acc'])
-hist = model.fit(x_train,y_train, epochs = 1000, batch_size = 32 ,validation_data=(x_val,y_val), verbose = 2, callbacks = [es,cp])
+hist = model.fit(x_train,y_train, epochs = 1000, batch_size = 32 ,validation_data=(x_val,y_val), verbose = 2, callbacks = [es])
 
 #4. 평가 예측
 loss = model.evaluate(x_test,y_test,batch_size = 32)
