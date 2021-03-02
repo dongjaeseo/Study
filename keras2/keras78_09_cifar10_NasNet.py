@@ -11,7 +11,10 @@ from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from sklearn.model_selection import train_test_split
-=
+
+
+###########################################################################################################
+# 이미지 사이즈 문제로 실행되진 않는다!!
 
 #1. 데이터
 (x_train,y_train),(x_test,y_test) = cifar10.load_data()

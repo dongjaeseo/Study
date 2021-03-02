@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def elu(x, alpha = 1.0):
-    return (x>0)*x + (x<=0)*(alpha*(np.exp(x)-1))
+def leaky_relu(x, alpha = 0.01):
+    return np.maximum(alpha*x , x)
 
 x = np.arange(-5, 5, 0.1)
-y = elu(x, 0.5)
+y = leaky_relu(x)
 
 plt.plot(x,y)
 plt.grid()
