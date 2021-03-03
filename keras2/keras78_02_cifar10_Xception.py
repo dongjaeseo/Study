@@ -16,10 +16,12 @@ from sklearn.model_selection import train_test_split
 #1. 데이터
 (x_train,y_train),(x_test,y_test) = cifar10.load_data()
 # print(x_train.shape, y_train.shape, x_test.shape) (50000, 32, 32, 3) (50000, 1) (10000, 32, 32, 3)
-x_train = preprocess_input(x_train)
-x_test = preprocess_input(x_test)
 
 x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, train_size = 0.8)
+
+x_train = preprocess_input(x_train)/255.
+x_test = preprocess_input(x_test)/255.
+x_val = preprocess_input(x_val)/255.
 
 y_train = to_categorical(y_train)
 y_test = to_categorical(y_test)
@@ -27,13 +29,12 @@ y_val = to_categorical(y_val)
 
 #2. 모델
 vgg16 = Xception(include_top= False, weights = 'imagenet', input_shape = (96,96,3))
-vgg16.trainable = False
+vgg16.trainable = True
 
 model = Sequential()
 model.add(UpSampling2D(size = (3,3)))
 model.add(vgg16)
 model.add(Flatten())
-model.add(Dense(4096, activation = 'relu'))
 model.add(Dense(128, activation = 'relu'))
 model.add(Dense(64, activation = 'relu'))
 model.add(Dense(10, activation= 'softmax'))
@@ -59,5 +60,10 @@ print('acc : ', loss[1])
 
 #####################################
 
+# False
 # loss :  1.7066929340362549
 # acc :  0.7878999710083008
+
+# True
+# loss :  0.5336567163467407
+# acc :  0.9276999831199646
