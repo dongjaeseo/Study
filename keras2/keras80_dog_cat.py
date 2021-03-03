@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.preprocessing.image import load_img, img_to_array # 이미지를 넘파이 배열로 바꿔준다!
 import numpy as np
 
-img_dog = load_img('../data/image/vgg/dog1.jpg', target_size = (224,224)) # 사이즈도 지정가능
-img_cat = load_img('../data/image/vgg/cat1.jpg', target_size = (224,224))
-img_ryan = load_img('../data/image/vgg/ryan1.jpg', target_size = (224,224))
-img_suit = load_img('../data/image/vgg/suit1.jpg', target_size = (224,224))
+img_dog = load_img('../data/image/vgg/dog2.jpg', target_size = (224,224)) # 사이즈도 지정가능
+img_cat = load_img('../data/image/vgg/cat2.jpg', target_size = (224,224))
+img_ryan = load_img('../data/image/vgg/ryan2.png', target_size = (224,224))
+img_suit = load_img('../data/image/vgg/suit2.jpg', target_size = (224,224))
 
 # plt.imshow(img_cat) # 이미지 잘 불러왔나 확인!
 # plt.show()
