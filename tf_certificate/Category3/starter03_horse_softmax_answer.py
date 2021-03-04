@@ -54,7 +54,7 @@ def solution_model():
         rescale = 1/255.
     )#Your Code here)
 
-    batch_size = 16
+    batch_size = 8
 
     train_generator = train_datagen.flow_from_directory(
         '../data/image/tmp2/horse-or-human/',
@@ -95,12 +95,12 @@ def solution_model():
     es = EarlyStopping(patience = 6)
     lr = ReduceLROnPlateau(factor = 0.25, verbose = 1, patience = 3)
 
-    model.compile(loss = 'categorical_crossentropy', optimizer = Adam(lr = 5*1e-4), metrics= ['acc'])
+    model.compile(loss = 'categorical_crossentropy', optimizer = 'adam', metrics= ['acc'])
 
     history = model.fit(train_generator, epochs = 1000, steps_per_epoch= np.ceil(1027/batch_size), validation_data= validation_generator,
      validation_steps = np.ceil(256/batch_size), callbacks = [es, lr])
     
-    
+
 
     print(model.evaluate(validation_generator, steps = np.ceil(256/batch_size)))
     return model

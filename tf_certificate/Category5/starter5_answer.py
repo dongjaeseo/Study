@@ -113,7 +113,6 @@ def solution_model():
     lr = ReduceLROnPlateau(patience=4, factor = 0.25, verbose = 1)
     model.compile(loss = 'mae', optimizer = 'adam')
     model.fit(train_set, epochs = 1000, validation_data= validation_set, callbacks = [es, lr])
-    # print(model.predict(np.expand_dims(np.expand_dims(np.array(range(30)), -1), 1)).shape)
     model.evaluate(validation_set)
     # YOUR CODE HERE TO COMPILE AND TRAIN THE MODEL
     def model_forecast(model, series, window_size):
@@ -153,7 +152,7 @@ def solution_model():
 # and the score will be returned to you.
 if __name__ == '__main__':
     model = solution_model()
-    # model.save("mymodel.h5")
+    model.save("./tf_certificate/category5/mymodel.h5")
 
 
     # THIS CODE IS USED IN THE TESTER FOR FORECASTING. IF YOU WANT TO TEST YOUR MODEL
