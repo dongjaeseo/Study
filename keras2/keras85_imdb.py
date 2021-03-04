@@ -13,7 +13,7 @@ from tensorflow.keras.layers import LSTM, Dense, Embedding
 
 #1. 데이터
 maxlen = 240
-vocab = 2000
+vocab = 10000
 
 (x_train, y_train), (x_test, y_test) = imdb.load_data(
     num_words = vocab
