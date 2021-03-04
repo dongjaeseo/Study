@@ -26,6 +26,7 @@ import numpy as np
 import urllib
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 
 def solution_model():
@@ -52,24 +53,34 @@ def solution_model():
     
     token = Tokenizer(num_words = vocab_size, oov_token= oov_tok)
     token.fit_on_texts(sentences)
-    sequence = token.texts_to_sequences(sentences)
-    '''
-    new_sentence = []
+    sentences = token.texts_to_sequences(sentences)
+    sentences = pad_sequences(sentences, maxlen = max_length, padding = padding_type, truncating= trunc_type)
     
-    training_size = 21367
     # print(len(sentences)) 26709
-    x_train = sentences[0:training_size]
-    x_test = sentences[training_size:]
-    y_train = labels[0:training_size]
-    y_test = labels[training_size:]
-
+    x_train = np.array(sentences[0:training_size])
+    x_test = np.array(sentences[training_size:])
+    y_train = np.array(labels[0:training_size])
+    y_test = np.array(labels[training_size:])
 
     model = tf.keras.Sequential([
     # YOUR CODE HERE. KEEP THIS OUTPUT LAYER INTACT OR TESTS MAY FAIL
+        tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length = max_length),
+        tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64)),
+        tf.keras.layers.Dense(32, activation = 'relu'),
+        tf.keras.layers.Dense(16, activation = 'relu'),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ])
+
+    model.summary()
+
+    es = EarlyStopping(patience= 8)
+    lr = ReduceLROnPlateau(factor = 0.25, patience = 4, verbose = 1)
+
+    model.compile(loss = 'binary_crossentropy', optimizer = 'adam', metrics = ['acc'])
+    model.fit(x_train, y_train, epochs = 1000, validation_split = 0.2, callbacks = [es, lr])
+    print(model.evaluate(x_test,y_test))
     return model
-    '''
+    
 
 
 # Note that you'll need to save your model as a .h5 like this.
@@ -78,4 +89,4 @@ def solution_model():
 # and the score will be returned to you.
 if __name__ == '__main__':
     model = solution_model()
-    # model.save("mymodel.h5")
+    model.save("./tf_certificate/category4/mymodel.h5")
