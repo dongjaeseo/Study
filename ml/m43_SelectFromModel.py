@@ -46,6 +46,10 @@ for thresh in thresholds:
 
     print('Thresh=%.3f, n=%d, R2: %.2f%%' %(thresh, select_x_train.shape[1], score*100))
 
+print(model.coef_)
+print(model.intercept_)
+# AttributeError: Coefficients are not defined for Booster type None
+
 # (404, 6)
 # Thresh=0.030, n=6, R2: 92.71%
 # (404, 5)
