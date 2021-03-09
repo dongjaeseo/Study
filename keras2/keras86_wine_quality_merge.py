@@ -9,16 +9,27 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+import pandas_profiling
 
 #1. 데이터
 dataset = pd.read_csv('../data/csv/winequality-white.csv', sep = ';').astype('float32')
 
+pr=dataset.profile_report()
+pr.to_file('../data/pr_report.html')
+
+'''
 x_data = dataset.iloc[:,:-1]
 y_data = dataset.iloc[:,-1]
-y_data[y_data<6] = 0
-y_data[y_data==6] = 1
-y_data[y_data>6] = 2
-print(y_data.value_counts())
+
+newlist = []
+for i in list(y_data):
+    if i <= 4:
+        newlist +=[0]
+    elif i <= 7:
+        newlist +=[1]
+    else:
+        newlist +=[2]
+y_data = newlist
 
 # print(np.unique(y_data)) # [3. 4. 5. 6. 7. 8. 9.]
 # print(x_data) # [4898 rows x 11 columns]
@@ -66,3 +77,4 @@ print('acc : ', loss[1])
 # Robust
 # loss :  2.4030537605285645
 # acc :  0.6428571343421936
+'''

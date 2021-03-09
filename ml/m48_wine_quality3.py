@@ -27,7 +27,7 @@ for i in list(y):
         newlist +=[2]
 y = newlist
 
-print(x.shape, y.shape) # (4898, 11) (4898,)
+# print(x.shape, y.shape) # (4898, 11) (4898,)
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler
 from sklearn.model_selection import train_test_split
@@ -38,7 +38,7 @@ scale = StandardScaler()
 scale.fit(x_train)
 x_train = scale.transform(x_train)
 x_test = scale.transform(x_test)
-print(x_train.shape, x_test.shape) # (3918, 11) (980, 11)
+# print(x_train.shape, x_test.shape) # (3918, 11) (980, 11)
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
