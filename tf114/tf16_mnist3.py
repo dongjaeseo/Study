@@ -33,7 +33,6 @@ w3 = tf.Variable(tf.random.normal([50,10]), name = 'weight3')
 b3 = tf.Variable(tf.random.normal([1, 10]), name = 'bias3')
 hypothesis = tf.nn.softmax(tf.matmul(layer2, w3) + b3)
 
-
 # 컴파일 훈련(다중분류)
 loss = tf.reduce_mean(-tf.reduce_sum(y * tf.log(hypothesis), axis = 1))
 train = tf.train.GradientDescentOptimizer(learning_rate=1e-1).minimize(loss)
