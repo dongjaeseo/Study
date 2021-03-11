@@ -19,8 +19,8 @@ y_train = encoder.transform(y_train).toarray()
 x = tf.placeholder(tf.float32, [None, x_train.shape[-1]])
 y = tf.placeholder(tf.float32, [None, y_train.shape[-1]])
 
-w = tf.Variable(tf.zeros([x_train.shape[-1],y_train.shape[-1]]), name = 'weight')
-b = tf.Variable(tf.zeros([1,y_train.shape[-1]]), name = 'bias')
+w = tf.Variable(tf.random.normal([x_train.shape[-1],y_train.shape[-1]], stddev = 0.01), name = 'weight')
+b = tf.Variable(tf.random.normal([1,y_train.shape[-1]], stddev = 0.01), name = 'bias')
 
 hypothesis = tf.nn.softmax(tf.matmul(x, w) + b)
 
@@ -30,8 +30,7 @@ train = tf.train.AdamOptimizer(learning_rate = 0.01).minimize(loss)
 
 with tf.compat.v1.Session() as sess:
     sess.run(tf.compat.v1.global_variables_initializer())
-
-    for epoch in range(5001):
+    for epoch in range(4001):
         cur_loss, _, cur_w = sess.run([loss, train, w], feed_dict = {x:x_train, y:y_train})
         if epoch%100 == 0:
             print(f'Epoch {epoch} ==== {cur_loss}')
@@ -39,4 +38,8 @@ with tf.compat.v1.Session() as sess:
     y_pred = np.argmax(y_pred, axis= 1)
     print('\naccuracy_score : ', accuracy_score(y_test, y_pred))
     
+    y_pred2 = sess.run(hypothesis, feed_dict = {x:x_test[:10]})
+    y_pred2 = np.argmax(y_pred2, 1)
+    y_test2 = y_test[:10]
+    print(y_pred2,'\n',y_test2)
 # accuracy_score :  0.9722222222222222
