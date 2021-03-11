@@ -39,5 +39,4 @@ with tf.compat.v1.Session() as sess:
     y_pred = sess.run(hypothesis, feed_dict = {x:x_test})
     y_pred = np.argmax(y_pred, axis= 1)
     print('\naccuracy_score : ', accuracy_score(y_test, y_pred))
-
 # accuracy_score :  1.0
