@@ -22,11 +22,13 @@ w1 = tf.get_variable('w1', shape = [784, 100],
                     initializer= tf.contrib.layers.xavier_initializer())
 b1 = tf.Variable(tf.random.normal([1, 100]), name = 'bias1')
 layer1 = tf.nn.relu(tf.matmul(x, w1) + b1)
+layer1 = tf.nn.dropout(layer1, keep_prob= 0.7)
 
 w2 = tf.get_variable('weight2', shape = [100, 128],
                     initializer = tf.contrib.layers.xavier_initializer())
 b2 = tf.Variable(tf.random.normal([1, 128]), name = 'bias2')
 layer2 = tf.nn.relu(tf.matmul(layer1, w2) + b2)
+layer2 = tf.nn.dropout(layer2, keep_prob= 0.7)
 
 w3 = tf.get_variable('weight3', shape = [128, 64],
                     initializer = tf.contrib.layers.xavier_initializer())
