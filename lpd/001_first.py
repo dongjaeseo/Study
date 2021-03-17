@@ -77,10 +77,10 @@ model.add(Dense(1000, activation = 'softmax'))
 model = load_model(model_path)
 
 #4. 평가 예측
-pred = model.predict(test_data)
+pred = model.predict(test_data, steps = len(test_data))
 pred = np.argmax(pred, 1)
 print(pred)
-sub.loc[:,'prediction'] = pred
+sub.loc['prediction'] = pred
 sub.to_csv('../data/lpd/sample_001.csv', index = False)
 
 # val_loss 0.27 정도? 
