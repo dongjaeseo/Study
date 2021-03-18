@@ -10,9 +10,9 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 #0. 변수
 batch = 16
 seed = 42
-dropout = 0.3
 epochs = 1000
-model_path = '../data/model/lpd_001.hdf5'
+model_path = '../data/model/lpd_006.hdf5'
+save_path = '../data/lpd/sample_006.csv'
 sub = pd.read_csv('../data/lpd/sample.csv', header = 0)
 es = EarlyStopping(patience = 5)
 lr = ReduceLROnPlateau(factor = 0.25, patience = 3, verbose = 1)
@@ -32,7 +32,7 @@ test_gen = ImageDataGenerator(
 
 # Found 39000 images belonging to 1000 classes.
 train_data = train_gen.flow_from_directory(
-    '../data/lpd/train_new',
+    '../data/lpd/train2',
     target_size = (224, 224),
     class_mode = 'sparse',
     batch_size = batch,
@@ -42,7 +42,7 @@ train_data = train_gen.flow_from_directory(
 
 # Found 9000 images belonging to 1000 classes.
 val_data = train_gen.flow_from_directory(
-    '../data/lpd/train_new',
+    '../data/lpd/train2',
     target_size = (224, 224),
     class_mode = 'sparse',
     batch_size = batch,
@@ -66,12 +66,12 @@ eff.trainable = False
 model = Sequential()
 model.add(eff)
 model.add(Flatten())
-model.add(Dense(1000, activation = 'relu'))
-model.add(Dense(1000, activation = 'softmax'))
+model.add(Dense(2000, activation = 'relu'))
+model.add(Dense(2000, activation = 'softmax'))
 
 #3. 컴파일 훈련
 model.compile(loss = 'sparse_categorical_crossentropy', optimizer = 'adam', metrics = ['sparse_categorical_accuracy'])
-model.fit(train_data, steps_per_epoch = np.ceil(39000/batch), validation_data= val_data, validation_steps= np.ceil(9000/batch),\
+model.fit(train_data, steps_per_epoch = np.ceil(40000/batch), validation_data= val_data, validation_steps= np.ceil(8000/batch),\
     epochs = epochs, callbacks = [es, cp, lr])
 
 model = load_model(model_path)
@@ -79,9 +79,11 @@ model = load_model(model_path)
 #4. 평가 예측
 pred = model.predict(test_data, steps = len(test_data))
 pred = np.argmax(pred, 1)
+pred = np.where(pred>=1000, pred - 1000, pred)
 print(pred)
-print(len(pred))
+print(np.min(pred))
+print(np.max(pred))
 sub.loc[:, 'prediction'] = pred
-sub.to_csv('../data/lpd/sample_001.csv', index = False)
+sub.to_csv(save_path, index = False)
 
 # val_loss 0.27 정도? 

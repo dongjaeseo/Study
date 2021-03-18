@@ -7,6 +7,8 @@ from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, BatchNormalization, Flatten, Dropout
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
+import matplotlib.pyplot as plt
+
 #0. 변수
 batch = 16
 seed = 42
@@ -23,65 +25,41 @@ train_gen = ImageDataGenerator(
     validation_split = 0.2,
     width_shift_range= 0.1,
     height_shift_range= 0.1,
-    preprocessing_function= preprocess_input,
+    preprocessing_function= preprocess_input
 )
 
 test_gen = ImageDataGenerator(
     preprocessing_function= preprocess_input,
+    rescale = 1/255.
 )
 
-# Found 39000 images belonging to 1000 classes.
-train_data = train_gen.flow_from_directory(
-    '../data/lpd/train_new',
-    target_size = (224, 224),
-    class_mode = 'sparse',
-    batch_size = batch,
-    seed = seed,
-    subset = 'training'
-)
+# # Found 39000 images belonging to 1000 classes.
+# train_data = train_gen.flow_from_directory(
+#     '../data/lpd/train',
+#     target_size = (128, 128),
+#     class_mode = 'sparse',
+#     batch_size = batch,
+#     seed = seed,
+#     subset = 'training'
+# )
 
 # Found 9000 images belonging to 1000 classes.
 val_data = train_gen.flow_from_directory(
-    '../data/lpd/train_new',
-    target_size = (224, 224),
+    '../data/lpd/train',
+    target_size = (128, 128),
     class_mode = 'sparse',
     batch_size = batch,
-    seed = seed,
+    shuffle = False,
     subset = 'validation'
 )
 
-# Found 72000 images belonging to 1 classes.
 test_data = test_gen.flow_from_directory(
-    '../data/lpd/test_new',
-    target_size = (224, 224),
+    '../data/lpd/test',
+    target_size = (128, 128),
     class_mode = None,
     batch_size = batch,
     shuffle = False
 )
 
-#2. 모델
-eff = EfficientNetB4(include_top = False, input_shape=(224, 224, 3))
-eff.trainable = False
-
-model = Sequential()
-model.add(eff)
-model.add(Flatten())
-model.add(Dense(1000, activation = 'relu'))
-model.add(Dense(1000, activation = 'softmax'))
-
-#3. 컴파일 훈련
-model.compile(loss = 'sparse_categorical_crossentropy', optimizer = 'adam', metrics = ['sparse_categorical_accuracy'])
-model.fit(train_data, steps_per_epoch = np.ceil(39000/batch), validation_data= val_data, validation_steps= np.ceil(9000/batch),\
-    epochs = epochs, callbacks = [es, cp, lr])
-
-model = load_model(model_path)
-
-#4. 평가 예측
-pred = model.predict(test_data, steps = len(test_data))
-pred = np.argmax(pred, 1)
-print(pred)
-print(len(pred))
-sub.loc[:, 'prediction'] = pred
-sub.to_csv('../data/lpd/sample_001.csv', index = False)
-
-# val_loss 0.27 정도? 
+plt.imshow(test_data[0][2])
+plt.show()
