@@ -80,8 +80,5 @@ model = load_model(model_path)
 pred = model.predict(test_data, steps = len(test_data))
 pred = np.argmax(pred, 1)
 pred = np.where(pred>=1000, pred - 1000, pred)
-print(pred)
-print(np.min(pred))
-print(np.max(pred))
 sub.loc[:, 'prediction'] = pred
 sub.to_csv(save_path, index = False)

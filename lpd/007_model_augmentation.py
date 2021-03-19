@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from tensorflow.keras.applications.efficientnet import EfficientNetB4
+from tensorflow.keras.applications.efficientnet import preprocess_input
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, BatchNormalization, Flatten, Dropout
+from tensorflow.keras.models import Sequential, load_model, Model
+from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, BatchNormalization, Flatten, Dropout, GlobalAveragePooling2D, Input
+from tensorflow.keras.activations import swish
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
 #0. 변수
@@ -12,22 +13,27 @@ batch = 16
 seed = 42
 dropout = 0.3
 epochs = 1000
-model_path = '../data/model/lpd_001.hdf5'
+model_path = '../data/model/lpd_007.hdf5'
 sub = pd.read_csv('../data/lpd/sample.csv', header = 0)
-es = EarlyStopping(patience = 5)
+es = EarlyStopping(patience = 7)
 lr = ReduceLROnPlateau(factor = 0.25, patience = 3, verbose = 1)
 cp = ModelCheckpoint(model_path, save_best_only= True)
 
 #1. 데이터
 train_gen = ImageDataGenerator(
     validation_split = 0.2,
-    width_shift_range= 0.1,
-    height_shift_range= 0.1,
+    width_shift_range= 0.2,
+    height_shift_range= 0.2,
     preprocessing_function= preprocess_input,
+    rotation_range= 20,
+    brightness_range= [0.8, 1.1],
+    zoom_range= 0.15,
+    rescale = 1/255.
 )
 
 test_gen = ImageDataGenerator(
     preprocessing_function= preprocess_input,
+    rescale = 1/255.
 )
 
 # Found 39000 images belonging to 1000 classes.
@@ -60,14 +66,19 @@ test_data = test_gen.flow_from_directory(
 )
 
 #2. 모델
-eff = MobileNetV2(include_top = False, input_shape=(224, 224, 3))
-eff.trainable = False
+eff = EfficientNetB4(include_top = False, input_shape=(224, 224, 3))
+eff.trainable = True
 
-model = Sequential()
-model.add(eff)
-model.add(Flatten())
-model.add(Dense(1000, activation = 'relu'))
-model.add(Dense(1000, activation = 'softmax'))
+pretrained = eff.output
+globalpooling = GlobalAveragePooling2D()(pretrained)
+layer_1 = Dense(2048)(globalpooling)
+layer_1 = swish(layer_1)
+layer_1 = Dropout(dropout)(layer_1)
+layer_2 = Dense(1024)(layer_1)
+layer_2 = swish(layer_2)
+output = Dense(1000, activation = 'softmax')(layer_2)
+
+model = Model(inputs = eff.input, outputs = output)
 
 #3. 컴파일 훈련
 model.compile(loss = 'sparse_categorical_crossentropy', optimizer = 'adam', metrics = ['sparse_categorical_accuracy'])
@@ -82,6 +93,6 @@ pred = np.argmax(pred, 1)
 print(pred)
 print(len(pred))
 sub.loc[:, 'prediction'] = pred
-sub.to_csv('../data/lpd/sample_001.csv', index = False)
+sub.to_csv(model_path, index = False)
 
 # val_loss 0.27 정도? 
