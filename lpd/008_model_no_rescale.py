@@ -54,7 +54,7 @@ val_data = train_gen.flow_from_directory(
     seed = seed,
     subset = 'validation'
 )
-
+#안녕 동재야? 잘 되가니?
 # Found 72000 images belonging to 1 classes.
 test_data = test_gen.flow_from_directory(
     '../data/lpd/test_new',
