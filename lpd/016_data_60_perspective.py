@@ -34,8 +34,6 @@ for i in range(1000):
 
         h , w = original.shape[:2]
 
-        # while True:
-
         rotX = (30)*np.pi/180
         rotY = 0
         rotZ = 0
