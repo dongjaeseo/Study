@@ -133,7 +133,7 @@ for tta in range(50):
             print(f'{i} 번째 테스트 이미지는 {percent}% 의 정확도를 가짐')
             count += 1
         i += 1
-    print(f'TTA {tta} : {count} 개가 불확실!')
+    print(f'TTA {tta+1} : {count} 개가 불확실!')
     count_result.append(count)
     print(f'기록 : {count_result}')
     sub.loc[:, 'prediction'] = temp_sub
