@@ -26,7 +26,7 @@ def onDistChange(val):
 if __name__ == '__main__':
 
     #Read input image, and create output image
-    src = cv2.imread('../data/lpd/train_new/0235/28.jpg')
+    src = cv2.imread('../data/lpd/train_new/0538/26.jpg')
     dst = np.ndarray(shape=src.shape,dtype=src.dtype)
 
     #Create user interface with trackbars that will allow to modify the parameters of the transformation
