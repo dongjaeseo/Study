@@ -8,10 +8,11 @@ from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, BatchNormalization, Flatten, Dropout, GlobalAveragePooling2D, Input, GaussianDropout
 from tensorflow.keras.activations import swish
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+from tensorflow.keras.optimizers import Adam
 from scipy import stats
 
 #0. 변수
-filenum = 19
+filenum = 23
 img_size = 192
 batch = 16
 seed = 42
@@ -21,8 +22,9 @@ test_dir = '../data/lpd/test_new'
 model_path = '../data/model/lpd_{0:03}.hdf5'.format(filenum)
 save_folder = '../data/lpd/submit_{0:03}'.format(filenum)
 sub = pd.read_csv('../data/lpd/sample.csv', header = 0)
+adam = Adam(learning_rate= 0.1)
 es = EarlyStopping(patience = 11)
-lr = ReduceLROnPlateau(factor = 0.5, patience = 3, verbose = 1)
+lr = ReduceLROnPlateau(factor = 0.25, patience = 3, verbose = 1)
 cp = ModelCheckpoint(model_path, save_best_only= True)
 
 if not os.path.exists(save_folder):
@@ -31,8 +33,8 @@ if not os.path.exists(save_folder):
 #1. 데이터
 train_gen = ImageDataGenerator(
     validation_split = 0.2,
-    width_shift_range= 0.1,
-    height_shift_range= 0.1,
+    width_shift_range= 0.05,
+    height_shift_range= 0.05,
     preprocessing_function= preprocess_input
 )
 
@@ -75,16 +77,13 @@ test_data = test_gen.flow_from_directory(
 eff = EfficientNetB4(include_top = False, input_shape=(img_size, img_size, 3))
 eff.trainable = True
 
-a = eff.output
-a = Dense(2048, activation= 'swish') (a)
-a = Dropout(0.3) (a)
 a = GlobalAveragePooling2D() (eff.output)
 a = Dense(1000, activation= 'softmax') (a)
 
 model = Model(inputs = eff.input, outputs = a)
 
 #3. 컴파일 훈련
-model.compile(loss = 'sparse_categorical_crossentropy', optimizer = 'adam', metrics = ['sparse_categorical_accuracy'])
+model.compile(loss = 'sparse_categorical_crossentropy', optimizer = adam, metrics = ['sparse_categorical_accuracy'])
 model.fit(train_data, steps_per_epoch = len(train_data), validation_data= val_data, validation_steps= len(val_data),\
     epochs = epochs, callbacks = [es, cp, lr])
 
@@ -122,7 +121,7 @@ for tta in range(50):
     temp = cumsum / (tta+1)
     temp_sub = np.argmax(temp, 1)
     temp_percent = np.max(temp, 1)
-
+    '''
     count = 0
     i = 0
     for percent in temp_percent:
@@ -131,7 +130,9 @@ for tta in range(50):
             count += 1
         i += 1
     print(f'TTA {tta+1} : {count} 개가 불확실!')
+    
     count_result.append(count)
     print(f'기록 : {count_result}')
+    '''
     sub.loc[:, 'prediction'] = temp_sub
     sub.to_csv(save_folder + '/sample_{0:03}_{1:02}.csv'.format(filenum, (tta+1)), index = False)

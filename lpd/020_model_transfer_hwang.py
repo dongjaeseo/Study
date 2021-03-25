@@ -11,8 +11,8 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 from scipy import stats
 
 #0. 변수
-filenum = 19
-img_size = 192
+filenum = 20
+img_size = 160
 batch = 16
 seed = 42
 epochs = 1000
@@ -31,8 +31,8 @@ if not os.path.exists(save_folder):
 #1. 데이터
 train_gen = ImageDataGenerator(
     validation_split = 0.2,
-    width_shift_range= 0.1,
-    height_shift_range= 0.1,
+    width_shift_range= 0.05,
+    height_shift_range= 0.05,
     preprocessing_function= preprocess_input
 )
 
@@ -75,9 +75,6 @@ test_data = test_gen.flow_from_directory(
 eff = EfficientNetB4(include_top = False, input_shape=(img_size, img_size, 3))
 eff.trainable = True
 
-a = eff.output
-a = Dense(2048, activation= 'swish') (a)
-a = Dropout(0.3) (a)
 a = GlobalAveragePooling2D() (eff.output)
 a = Dense(1000, activation= 'softmax') (a)
 

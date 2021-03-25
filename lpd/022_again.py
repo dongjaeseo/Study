@@ -11,12 +11,12 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 from scipy import stats
 
 #0. 변수
-filenum = 19
+filenum = 22
 img_size = 192
 batch = 16
 seed = 42
 epochs = 1000
-train_dir = '../data/lpd/train_new2'
+train_dir = '../data/lpd/train_new'
 test_dir = '../data/lpd/test_new'
 model_path = '../data/model/lpd_{0:03}.hdf5'.format(filenum)
 save_folder = '../data/lpd/submit_{0:03}'.format(filenum)
@@ -31,8 +31,8 @@ if not os.path.exists(save_folder):
 #1. 데이터
 train_gen = ImageDataGenerator(
     validation_split = 0.2,
-    width_shift_range= 0.1,
-    height_shift_range= 0.1,
+    width_shift_range= 0.05,
+    height_shift_range= 0.05,
     preprocessing_function= preprocess_input
 )
 
@@ -75,9 +75,6 @@ test_data = test_gen.flow_from_directory(
 eff = EfficientNetB4(include_top = False, input_shape=(img_size, img_size, 3))
 eff.trainable = True
 
-a = eff.output
-a = Dense(2048, activation= 'swish') (a)
-a = Dropout(0.3) (a)
 a = GlobalAveragePooling2D() (eff.output)
 a = Dense(1000, activation= 'softmax') (a)
 
@@ -112,6 +109,7 @@ for tta in range(50):
         if count < tta/2.:
             print(f'{tta+1} 반복 중 {i} 번째는 횟수가 {count} 로 {(tta+1)/2.} 미만!')
 '''
+threshold = 0.833752
 cumsum = np.zeros([72000, 1000])
 count_result = []
 for tta in range(50):
@@ -122,16 +120,16 @@ for tta in range(50):
     temp = cumsum / (tta+1)
     temp_sub = np.argmax(temp, 1)
     temp_percent = np.max(temp, 1)
-
-    count = 0
+    
     i = 0
+    count_list = []
     for percent in temp_percent:
-        if percent < 0.3:
-            print(f'{i} 번째 테스트 이미지는 {percent}% 의 정확도를 가짐')
-            count += 1
+        if percent < threshold:
+            count_list.append(i)
         i += 1
-    print(f'TTA {tta+1} : {count} 개가 불확실!')
-    count_result.append(count)
-    print(f'기록 : {count_result}')
-    sub.loc[:, 'prediction'] = temp_sub
-    sub.to_csv(save_folder + '/sample_{0:03}_{1:02}.csv'.format(filenum, (tta+1)), index = False)
+    
+    df = pd.DataFrame(count_list, index = 0)
+    df.to_csv('../data/lpd/checkme.csv', index = False)
+
+    # sub.loc[:, 'prediction'] = temp_sub
+    # sub.to_csv(save_folder + '/sample_{0:03}_{1:02}.csv'.format(filenum, (tta+1)), index = False)

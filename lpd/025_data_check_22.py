@@ -11,12 +11,12 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 from scipy import stats
 
 #0. 변수
-filenum = 19
+filenum = 25
 img_size = 192
 batch = 16
 seed = 42
 epochs = 1000
-train_dir = '../data/lpd/train_new2'
+train_dir = '../data/lpd/train_new3'
 test_dir = '../data/lpd/test_new'
 model_path = '../data/model/lpd_{0:03}.hdf5'.format(filenum)
 save_folder = '../data/lpd/submit_{0:03}'.format(filenum)
@@ -31,8 +31,8 @@ if not os.path.exists(save_folder):
 #1. 데이터
 train_gen = ImageDataGenerator(
     validation_split = 0.2,
-    width_shift_range= 0.1,
-    height_shift_range= 0.1,
+    width_shift_range= 0.05,
+    height_shift_range= 0.05,
     preprocessing_function= preprocess_input
 )
 
@@ -75,9 +75,6 @@ test_data = test_gen.flow_from_directory(
 eff = EfficientNetB4(include_top = False, input_shape=(img_size, img_size, 3))
 eff.trainable = True
 
-a = eff.output
-a = Dense(2048, activation= 'swish') (a)
-a = Dropout(0.3) (a)
 a = GlobalAveragePooling2D() (eff.output)
 a = Dense(1000, activation= 'softmax') (a)
 
@@ -87,7 +84,7 @@ model = Model(inputs = eff.input, outputs = a)
 model.compile(loss = 'sparse_categorical_crossentropy', optimizer = 'adam', metrics = ['sparse_categorical_accuracy'])
 model.fit(train_data, steps_per_epoch = len(train_data), validation_data= val_data, validation_steps= len(val_data),\
     epochs = epochs, callbacks = [es, cp, lr])
-
+"""
 model = load_model(model_path)
 
 #4. 평가 예측
@@ -122,7 +119,7 @@ for tta in range(50):
     temp = cumsum / (tta+1)
     temp_sub = np.argmax(temp, 1)
     temp_percent = np.max(temp, 1)
-
+    '''
     count = 0
     i = 0
     for percent in temp_percent:
@@ -131,7 +128,10 @@ for tta in range(50):
             count += 1
         i += 1
     print(f'TTA {tta+1} : {count} 개가 불확실!')
+    
     count_result.append(count)
     print(f'기록 : {count_result}')
+    '''
     sub.loc[:, 'prediction'] = temp_sub
     sub.to_csv(save_folder + '/sample_{0:03}_{1:02}.csv'.format(filenum, (tta+1)), index = False)
+    """

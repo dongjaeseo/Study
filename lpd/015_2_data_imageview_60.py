@@ -65,7 +65,7 @@ for i in range(1000):
     for img in range(48,72):
         original = cv2.imread('../data/lpd/train_new3/{0:04}/{1:02}.jpg'.format(i, img)) 
         original2 = cv2.copyMakeBorder(original, 18, 19, 0, 0, cv2.BORDER_REPLICATE)
-        cv2.imwrite('../data/lpd/train_new2/{0:04}/{1:02}.jpg'.format(i, img), original2)
+        cv2.imwrite('../data/lpd/train_new3/{0:04}/{1:02}.jpg'.format(i, img), original2)
 
 
 # csv 로 위치 확인
