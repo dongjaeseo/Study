@@ -39,14 +39,14 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 def solution_model():
     url = 'https://storage.googleapis.com/download.tensorflow.org/data/rps.zip'
-    urllib.request.urlretrieve(url, '../data/image/rps.zip')
-    local_zip = '../data/image/rps.zip'
+    urllib.request.urlretrieve(url, 'rps.zip')
+    local_zip = 'rps.zip'
     zip_ref = zipfile.ZipFile(local_zip, 'r')
-    zip_ref.extractall('../data/image/tmp/')
+    zip_ref.extractall('tmp/')
     zip_ref.close()
 
 
-    TRAINING_DIR = "../data/image/tmp/rps/"
+    TRAINING_DIR = "tmp/rps/"
     training_datagen = ImageDataGenerator(
         # YOUR CODE HERE
         width_shift_range = 0.1,
@@ -107,4 +107,4 @@ def solution_model():
 # and the score will be returned to you.
 if __name__ == '__main__':
     model = solution_model()
-    model.save("./tf_certificate/category3/mymodel.h5")
+    model.save("mymodel2.h5")
