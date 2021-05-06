@@ -34,3 +34,10 @@ print(results)
 
 best_model = model.tuner.get_best_model()
 best_model.save('C:/data/h5/autokeras/keras107.h5')
+
+model2 = model.export_model()
+try:
+    model2.save('C:/data/h5/autokeras/keras107', save_format='tf')
+except:
+    model2.save('C:/data/h5/autokeras/keras107.h5')
+
