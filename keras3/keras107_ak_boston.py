@@ -14,7 +14,7 @@ scaler = StandardScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
-
+'''
 model = ak.StructuredDataRegressor(
     overwrite=True,
     max_trials=3
@@ -41,3 +41,14 @@ try:
 except:
     model2.save('C:/data/h5/autokeras/keras107.h5')
 
+'''
+
+model3 = load_model('C:/data/h5/autokeras/keras107', custom_objects=ak.CUSTOM_OBJECTS)
+result_boston = model3.evaluate(x_test, y_test)
+
+y_pred = model3.predict(x_test)
+r2 = r2_score(y_test, y_pred)
+
+print('load_result :', result_boston, r2)
+
+print('끝끄르ㅡ틑끝')
