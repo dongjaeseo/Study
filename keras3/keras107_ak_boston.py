@@ -1,54 +1,63 @@
 import numpy as np
 import tensorflow as tf
 import autokeras as ak
-from tensorflow.keras.datasets import mnist, boston_housing
-from tensorflow.keras.models import load_model
-from sklearn.metrics import r2_score
 
-(x_train, y_train), (x_test, y_test) = boston_housing.load_data()
-# (404, 13) (404,)
-# (102, 13) (102,)
+from sklearn.datasets import load_boston
 
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-scaler = StandardScaler()
+dataset = load_boston()
+x = dataset.data
+y = dataset.target
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, y, train_size = 0.8)
+
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
-'''
-model = ak.StructuredDataRegressor(
-    overwrite=True,
-    max_trials=3
-)
+
+model = ak.StructuredDataRegressor(loss = 'mse', metrics = ['mae'], max_trials=2, overwrite=True)
 
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
-es = EarlyStopping(patience = 6)
-lr = ReduceLROnPlateau(patience = 3, factor = 0.5, verbose = 1)
-filepath = 'C:/data/h5/autokeras/'
-mc = ModelCheckpoint(filepath, save_best_only=True, verbose = 1)
+es = EarlyStopping(patience = 20)
+lr = ReduceLROnPlateau(factor = 0.5, patience=10)
 
-model.fit(x_train, y_train, epochs = 10, validation_split=0.2, callbacks = [es, lr, mc])
+model.fit(x_train, y_train, epochs = 300, validation_split=0.2, callbacks=[es, lr])
 
 results = model.evaluate(x_test, y_test)
 
-print(results)
-
-best_model = model.tuner.get_best_model()
-best_model.save('C:/data/h5/autokeras/keras107.h5')
+from sklearn.metrics import r2_score
+y_pred = model.predict(x_test)
+r2 = r2_score(y_test, y_pred)
 
 model2 = model.export_model()
 try:
-    model2.save('C:/data/h5/autokeras/keras107', save_format='tf')
+    model2.save('ak_save_boston', save_format = 'tf')
 except:
-    model2.save('C:/data/h5/autokeras/keras107.h5')
+    model2.save('ak_save_boston.h5')
 
-'''
-
-model3 = load_model('C:/data/h5/autokeras/keras107', custom_objects=ak.CUSTOM_OBJECTS)
+best_model = model.tuner.get_best_model()
+try:
+    best_model.save('ak_save_best_boston', save_format = 'tf')
+except:
+    best_model.save('ak_save_best_boston.h5')
+    
+from tensorflow.keras.models import load_model
+model3 = load_model('ak_save_boston', custom_objects=ak.CUSTOM_OBJECTS)
 result_boston = model3.evaluate(x_test, y_test)
+y_pred2 = model3.predict(x_test)
+r22 = r2_score(y_test, y_pred2)
 
-y_pred = model3.predict(x_test)
-r2 = r2_score(y_test, y_pred)
+model4 = load_model('ak_save_best_boston', custom_objects=ak.CUSTOM_OBJECTS)
+result_best_boston = model4.evaluate(x_test, y_test)
+y_pred3 = model4.predict(x_test)
+r23 = r2_score(y_test, y_pred3)
 
-print('load_result :', result_boston, r2)
+print('result :', results, r2)
+print('load_result :', result_boston, r22)
+print('load_best :', result_best_boston, r23)
 
-print('끝끄르ㅡ틑끝')
+# result : [24.290416717529297, 2.46528959274292] 0.626322810392746
+# load_result : [24.290416717529297, 2.46528959274292] 0.626322810392746
+# load_best : [24.290416717529297, 2.46528959274292] 0.626322810392746
