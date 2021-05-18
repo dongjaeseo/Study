@@ -1,3 +1,5 @@
+# 오토케라스에서 모델을 저장
+
 import numpy as np
 import tensorflow as tf
 import autokeras as ak
