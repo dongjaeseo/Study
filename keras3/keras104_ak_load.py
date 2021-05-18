@@ -1,3 +1,5 @@
+# 오토케라스에서 모델 로드하기
+
 import numpy as np
 import tensorflow as tf
 import autokeras as ak
