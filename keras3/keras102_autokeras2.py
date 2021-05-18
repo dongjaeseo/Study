@@ -1,3 +1,5 @@
+# 오토케라스에서 이미지 분류해보자
+
 import numpy as np
 import tensorflow as tf
 import autokeras as ak
